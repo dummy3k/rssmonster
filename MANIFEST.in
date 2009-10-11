@@ -1,0 +1,3 @@
+include rssmonster/config/deployment.ini_tmpl
+recursive-include rssmonster/public *
+recursive-include rssmonster/templates *
