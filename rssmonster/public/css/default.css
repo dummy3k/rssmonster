@@ -1,0 +1,499 @@
+@charset "utf-8";
+
+
+body  {
+	font: 100% Verdana;
+	background: #ffffff;
+	margin: 0;
+	padding: 0;
+	text-align: center;
+	color: #000000;
+}
+a {
+	outline: none;
+}
+
+h1, h2, h3, h4, h5 {
+	clear: both;	
+}
+
+h1 {
+    font-size: 18px;
+    font-weight: bold;
+}
+
+h2 {
+    font-size: 16px;
+    font-weight: bold;
+}
+
+h3 {
+    font-size: 16px;
+    font-weight: bold;
+}
+
+h4 {
+    font-size: 14px;
+    font-weight: bold;
+}
+
+img {
+	border: 0;
+}
+
+p {
+    font-size: 12px;	
+}
+
+#container { 
+	position: relative;
+	width: 980px;
+	background: #FFFFFF;
+	margin: 0 auto;
+	border: 0;
+	text-align: left;
+}
+#logo {
+	height: 90px;
+}
+#logo img
+{
+	border: 0;
+	margin: 0;
+	margin-top: 5px;
+}
+#headmenu {
+	position: absolute;
+	right: 0px;
+	top: 10px;
+	width: 700px;
+	height:40px;
+}
+#headmenu p {
+	font-size:16px;
+	margin: 5px;
+}
+#headmenu a:link,
+#headmenu a:visited,
+#headmenu a:active {
+	font-size:12px;
+	color: #0000BB;
+	text-decoration: none;
+}
+#headmenu a:hover {
+	color:#000000;
+	text-decoration: underline;
+}
+#search {
+	position: absolute;
+	right: 3px;
+	top: 45px;
+	width:225px;
+	height:29px;
+}
+
+#search input {
+	border: 1px solid #afafaf;
+	font-size: 14px;
+	font-family:Verdana;
+	width:200px;
+}
+
+#mainContent { 
+	margin: 0;
+	padding: 0;
+}
+#mainContent input,
+#mainContent textarea {
+	border: 1px solid #afafaf;
+	font-size: 14px;
+	font-family:Verdana;
+}
+#mainContent input:hover,
+#mainContent textarea:hover {
+	border: 1px solid #888888;
+}
+#mainContent input:focus,
+#mainContent textarea:focus {
+	border: 1px solid #888888;
+}
+#mainContent textarea:focus.postContra {
+	border: 1px solid #691110;
+	background-color: #f5ecec;
+}
+#mainContent textarea:focus.postPro {
+	border: 1px solid #0a6005;
+	background-color: #edf5ec;
+}
+#mainContent input.submit {
+	cursor:pointer;
+}
+#mainContent ul.parent {
+	margin:2px;
+	width: 100%;
+	font-size: 12px;
+	margin-left: 5px;
+	font-style:italic;
+	list-style-type: none;
+	padding: 0;
+}
+#mainContent ul {
+	margin:5px;
+	width: 100%;
+	font-size: 14px;
+	padding-left:10px;
+}
+#mainContent a:link,
+#mainContent a:visited,
+#mainContent a:active {
+	font-size:12px;
+	color: #0000BB;
+	text-decoration: none;
+}
+
+#mainContent a:hover {
+	color:#000000;
+	text-decoration: underline;
+}
+#mainContent div.vote {
+	float:left;
+	clear: both;
+	width: 50px;
+	margin-top: 15px;
+	font-size: 16px;
+	font-weight: bold;
+	color: #2a2a2a;
+}
+#mainContent a:link.voteUp,
+#mainContent a:visited.voteUp,
+#mainContent a:active.voteUp {
+	display:block;
+	width: 30px;
+	height: 20px;
+	background-image:url(../img/up.jpg);
+}
+#mainContent a:hover.voteUp {
+	background-image:url(../img/up_o.jpg);
+}
+#mainContent span.voteUpDone,
+#mainContent a.voteUpDone {
+	display:block;
+	width: 30px;
+	height: 20px;
+	background-image:url(../img/up_o.jpg);
+}
+#mainContent a:link.voteDown,
+#mainContent a:visited.voteDown,
+#mainContent a:active.voteDown {
+	display:block;
+	width: 30px;
+	height: 20px;
+	background-image:url(../img/down.jpg);
+}
+#mainContent span.voteDownDone,
+#mainContent a.voteDownDone {
+	display:block;
+	width: 30px;
+	height: 20px;
+	background-image:url(../img/down_o.jpg);
+}
+#mainContent a:hover.voteDown {
+	background-image:url(../img/down_o.jpg);
+}
+#mainContent div.title {
+	float:left;
+	margin: 0;
+	margin-top: 10px;
+	margin-bottom: 20px;
+	font-size: 20px;
+	width: 910px;
+	padding:10px;
+	background-color:#f0f0f0;
+}
+
+#mainContent div.title a {
+   font-size: 20px;
+}
+
+#mainContent div.start {
+	margin: 0;
+	width: 485px;
+	font-size:14px;
+	background-color: #eeeeee;
+	margin-bottom: 10px;
+	cursor: normal;
+}
+#mainContent div:hover.start {
+	background-color: #dddddd;
+	cursor: pointer;
+}
+
+#mainContent div.pro {
+	margin: 0;
+	width: 485px;
+	background-color:#edf5ec;
+	font-size:14px;
+	margin-bottom: 10px;
+	cursor: normal;
+}
+#mainContent div:hover.pro {
+	background-color: #dbf3d8;
+    cursor: pointer;
+}
+
+#mainContent div.contra {
+	margin: 0;
+	width: 485px;
+	font-size:14px;
+	background-color: #F5ECEC;
+	margin-bottom: 10px;
+	cursor: normal;
+	
+}
+#mainContent div:hover.contra {
+	background-color: #f3dede;   
+	cursor: pointer;
+}
+#mainContent div.contra td.votes {
+	width: 30px;
+	background-color: #691110;
+	color: white;
+	font-size: 20px;
+	text-align: center;
+}
+#mainContent div.pro td.votes {
+	width: 30px;
+	background-color: #0a6005;
+	color: white;
+	font-size: 20px;
+	text-align: center;
+}
+#mainContent div.start td.votes {
+	width: 30px;
+	color: white;
+	font-size: 20px;
+	text-align: center;
+}
+
+#mainContent div.pro td.content {
+	padding: 5px;	
+}
+#mainContent div.contra td.content {
+	padding: 5px;	
+}
+
+#mainContent div.start td.content {
+	padding: 5px;	
+}
+
+#mainContent div.right {
+	margin: 0;
+	float: right;
+}
+#mainContent div.left {
+	margin: 0;
+	float: left;
+}
+#mainContent div.proTitle {
+	margin: 0;
+	float: right;
+	text-align: left;
+	width: 475px;
+	padding:10px;
+	padding-left: 0;
+	font-weight: bold;
+	font-size: 14px;
+}
+#mainContent div.contraTitle {
+	margin: 0;
+	float: left;
+	text-align: left;
+	width: 475px;
+	padding:10px;
+	padding-left: 0;
+	font-weight: bold;
+	font-size: 14px;
+}
+#mainContent p {
+	margin: 5px 0px;
+}
+#mainContent p.login {
+	font-size: 10px;
+	font-weight:normal;
+}
+#mainContent table.avatar {
+	font-size: 10px;
+}
+#mainContent a.small
+{
+	font-size: 10px;
+}
+#mainContent a.big
+{
+	font-size: 14px;
+}
+#mainContent a:link.normal,
+#mainContent a:visited.normal,
+#mainContent a:active.normal,
+#mainContent a:hover.normal
+{
+	font-size: 12px;
+}
+#mainContent a:link.edit,
+#mainContent a:visited.edit,
+#mainContent a:active.edit
+{
+	font-size: 12px;
+}
+#mainContent a:hover.edit
+{
+	font-size: 12px;
+	text-decoration: none;
+	color:#FF0000;
+}
+#mainContent a:link.procontra,
+#mainContent a:visited.procontra,
+#mainContent a:active.procontra
+{
+	padding: 1px;
+	display: block;
+	width:95px;
+	height: 16px;
+	background-image:url(../img/button.png);
+	color:#FFFFFF;
+	text-align:center;
+	font-weight:bold;
+}
+#mainContent a:hover.procontra
+{
+	text-decoration: none;
+	background-image:url(../img/button_o.png);
+}
+#mainContent p.small
+{
+	font-size: 12px;
+}
+#footer {
+	margin-top: 20px;
+	margin-bottom: 10px;
+	padding-top: 5px;
+	border-top: 1px solid #EDF5EC;
+	float: left;
+	width: 100%;
+	font-size:12px;	
+}
+#footer hr {
+	width: 100%;
+  	border: 1px solid;
+	border-bottom: 0;
+	height: 0px;
+	color:#2a2a2a;
+}
+
+#main {
+	clear: left;
+}
+
+.ui-icon {
+    float: left;
+}
+
+.ui-state-highlight {
+    padding: 3px;
+    margin-bottom: 10px;
+}
+
+#new-argument {
+    width: 400px;
+    height: 200px;
+}
+
+form {
+    float: left;
+    margin-bottom: 10px;
+}
+
+div.main {
+    float: left;
+    width: 450px;
+}
+
+div.sidenav {
+    float: right;
+    width: 400px;
+}
+
+input.openid-identifier {
+    height: 28px;
+    width: 300px;line-height:22px;
+	padding-left:32px;
+	background:transparent url(../img/openid-large.png) no-repeat scroll left center;
+	margin:5px 0;
+	border:1px solid #999999;
+	font-family:Trebuchet MS,Helvetica,sans-serif;
+	font-size:100%;
+}
+
+input.openid-login-button {
+    height: 43px;
+}
+
+.openid_large_btn {
+	border:1px solid #DDDDDD;
+	float:left;
+	height:60px;
+	margin:3px;
+	width:100px;
+}
+
+.openid_small_btn {
+	border:1px solid #DDDDDD;
+	float:left;
+	height:24px;
+	margin:3px;
+	width:24px;
+}
+
+#openid-prompt {
+	width: 300px;
+    display: none;
+    float: left;
+    margin: 20px 0px;
+}
+
+#preview {
+	padding-top: 30px;
+    clear: left;
+}
+
+input.openid-identifier {
+    height: 28px;
+    font-size: 16px !important;
+    padding-top: 12px;	
+    width: 330px;
+}
+
+.latest-user-statements {
+	clear: both;
+}
+
+table.nicetable {
+	border: 1px solid black;
+	width: 400px;
+}
+
+table.nicetable th {
+	font-size: 12px;
+	font-weight: bold;
+	
+	padding: 3px;
+	width: 30px;
+	
+	border-right: 1px solid black;
+}
+
+table.nicetable td {
+	font-size: 12px;
+	font-weight: bold;
+	padding: 3px;
+}
