@@ -6,6 +6,8 @@ body  {
 	background: #ffffff;
 	margin: 0;
 	padding: 0;
+	padding-right:5%;
+	padding-left:5%;
 	text-align: center;
 	color: #000000;
 }
@@ -14,7 +16,8 @@ a {
 }
 
 h1, h2, h3, h4, h5 {
-	clear: both;	
+	clear: both;
+	font-family: sans-serif;
 }
 
 h1 {
@@ -41,8 +44,8 @@ img {
 	border: 0;
 }
 
-p {
-    font-size: 12px;	
+p, a {
+    font-size: 14px;	
 }
 
 #container { 
@@ -62,12 +65,11 @@ p {
 	margin: 0;
 	margin-top: 5px;
 }
+
+
 #headmenu {
-	position: absolute;
-	right: 0px;
-	top: 10px;
-	width: 700px;
-	height:40px;
+	text-align: right;
+	padding:10px;
 }
 #headmenu p {
 	font-size:16px;

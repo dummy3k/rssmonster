@@ -17,7 +17,9 @@
 </head>
 <body>
 
+    <div id="headmenu">
     <a href="${h.url_for(controller='login', action='signout')}">Logout</a>
+    </div>
     <% flashes = h.flash.pop_messages() %>
     % if flashes:
         % for flash in flashes:
@@ -32,9 +34,6 @@
      ${self.content()}
  </div>
  
- <div class="sidenav">
-  ${self.sidenav()}
- </div>
 </body>
 </html>
 

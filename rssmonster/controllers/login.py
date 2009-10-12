@@ -3,7 +3,6 @@ from pylons.controllers.util import abort, redirect_to
 
 from rssmonster.lib.base import BaseController, render
 from rssmonster.model import meta
-
 import rssmonster.model as model
 import rssmonster.lib.helpers as h
 
