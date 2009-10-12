@@ -14,3 +14,6 @@ class FeedController(BaseController):
         #return render('/feed.mako')
         # or, return a response
         return 'Hello World'
+        
+    def add(self):
+        return "url = %s" % request.params.get('url')
