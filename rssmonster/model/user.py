@@ -1,5 +1,4 @@
 from sqlalchemy import *
-#from thetruth.model import meta
 import meta
 import hashlib
 from datetime import datetime

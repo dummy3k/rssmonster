@@ -6,7 +6,7 @@
     <title>RSSmonster</title>
 
 	<link href="/css/default.css" media="screen" rel="stylesheet" type="text/css" />
-##    <link href="/css/ui-lightness/jquery-ui-1.7.2.custom.css" media="screen" rel="stylesheet" type="text/css" />
+    <link href="/css/ui-lightness/jquery-ui-1.7.2.custom.css" media="screen" rel="stylesheet" type="text/css" />
     <script src="/js/jquery-1.3.2.min.js" type="text/javascript"></script>
     <script src="/js/jquery-ui-1.7.2.custom.min.js" type="text/javascript"></script>
     <script src="/js/script.js" type="text/javascript"></script>
@@ -17,6 +17,7 @@
 </head>
 <body>
 
+    <a href="${h.url_for(controller='login', action='signout')}">Logout</a>
     <% flashes = h.flash.pop_messages() %>
     % if flashes:
         % for flash in flashes:

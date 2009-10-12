@@ -31,7 +31,6 @@ class BaseController(WSGIController):
     def __do_stuff__(self):
         try:
             c.user = session['user']
-            log.debug("Hi FOOOOOOOOOO")
         except Exception as ex:
             log.debug(ex)
             pass
