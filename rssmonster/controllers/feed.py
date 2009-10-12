@@ -24,4 +24,17 @@ class FeedController(BaseController):
         meta.Session.save(feed)
         meta.Session.commit()
         
-        return "url = %s" % request.params.get('url')
+        #return "url = %s" % request.params.get('url')
+        return redirect_to(action='show_list')
+        
+    def show_list(self):
+        query = meta.Session.query(model.Feed)
+        c.feeds = query.all()
+        c.links = [
+            ('James','http://jimmyg.org'),
+            ('Ben','http://groovie.org'),
+            ('Philip',''),
+        ]
+        
+        return render('feed/list.mako')
+        

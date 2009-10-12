@@ -3,7 +3,7 @@
 <head>
 <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
 
-    <title>RSSmonster</title>
+    <title>${self.title()} - RSSmonster</title>
 
 	<link href="/css/default.css" media="screen" rel="stylesheet" type="text/css" />
     <link href="/css/ui-lightness/jquery-ui-1.7.2.custom.css" media="screen" rel="stylesheet" type="text/css" />
@@ -17,8 +17,9 @@
 </head>
 <body>
 
+    <h1>${self.title()}</h1>
     <div id="headmenu">
-    <a href="${h.url_for(controller='login', action='signout')}">Logout</a>
+        <a href="${h.url_for(controller='login', action='signout')}">Logout</a>
     </div>
     <% flashes = h.flash.pop_messages() %>
     % if flashes:

@@ -8,7 +8,6 @@ body  {
 	padding: 0;
 	padding-right:5%;
 	padding-left:5%;
-	text-align: center;
 	color: #000000;
 }
 a {
@@ -18,6 +17,7 @@ a {
 h1, h2, h3, h4, h5 {
 	clear: both;
 	font-family: sans-serif;
+	text-align: center;
 }
 
 h1 {
@@ -47,6 +47,14 @@ img {
 p, a {
     font-size: 14px;	
 }
+
+table { border: 0px; background-color:#85ACF7; border-style:solid; }
+td { border: 0px; background-color:White; border-style:solid; } 
+th { border: 0px; color: White; border-style:solid;
+	font-family: sans-serif;
+    font-weight: bold;
+} 
+
 
 #container { 
 	position: relative;
@@ -417,7 +425,6 @@ form {
 
 div.main {
     float: left;
-    width: 450px;
 }
 
 div.sidenav {
