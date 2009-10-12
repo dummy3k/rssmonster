@@ -18,3 +18,16 @@ class BaseController(WSGIController):
             return WSGIController.__call__(self, environ, start_response)
         finally:
             meta.Session.remove()
+            
+        self.__do_stuff__()
+        
+    def __before__(self):
+        self.__do_stuff__()
+        
+    def __do_stuff__(self):
+        log.debug("Hi FOOOOOOOOOO")
+        try:
+            c.user = session['user']
+        except:
+            pass
+            

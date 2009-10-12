@@ -41,8 +41,13 @@ class LoginController(BaseController):
             redirect_to(action='signin')
             
         h.flash(_("Already signed in."))
-        redirect_to(controller='statements', action="index")
+        return self.go_back()
+        
 
+    def go_back(self):
+        """ return to the original source """
+        return render('login/flash_only.mako')
+        
 #    @validate(template='account.index', schema=schema.UpdateUser(), form='index',
 #              variable_decode=True)
 
@@ -67,8 +72,9 @@ class LoginController(BaseController):
         log.debug("enter signin()")
         if c.user:
             h.flash(_("Already signed in."))
-            return redirect_to(controller='statements', action='index')
+            return self.go_back()
 
+        h.flash(_("HELLO !"))
         return render('login/signin.mako')
 
     def signin_POST(self):
@@ -95,9 +101,9 @@ class LoginController(BaseController):
         )
 
         authrequest.addExtension(sreg_request)
-        redirecturl = authrequest.redirectURL(h.url_for(controller='statements', action='index', qualified=True),
+        redirecturl = authrequest.redirectURL(config['base_url'],
             #h.url_for(controller='main', action='index', qualified=True),
-            return_to=h.url_for(action='verified', qualified=True),
+            return_to=config['base_url'] + h.url_for(action='verified', qualified=False),
             immediate=False
         )
         log.debug("redirecturl: %s" % redirecturl)
@@ -106,7 +112,8 @@ class LoginController(BaseController):
         return redirect_to(redirecturl)
     
     def success(self):
-        return redirect_to(controller='statements', action="index")
+        return "foo"
+        return self.go_back()
 
     def verified(self):
         log.debug("enter verified()")
@@ -174,7 +181,7 @@ class LoginController(BaseController):
 
                 return redirect_to(controller=controller, action=action, id=id, istrue=istrue)
             else:
-                return redirect_to(controller='statements', action='index')
+                return self.go_back()
         else:
             log.warn("verified, but no success")
             log.debug("info: %s" % info)
@@ -185,12 +192,12 @@ class LoginController(BaseController):
     def signout(self):
         if not c.user:
             h.flash(_("You are not signed in."))
-            redirect_to(controller='statements', action='index')
+            self.go_back()
             
         session.clear()
         h.flash(_("You've been signed out."))
 
-        redirect_to(controller='statements', action='index')
+        self.go_back()
 
     def banned(self):
         if not c.user:
@@ -198,7 +205,7 @@ class LoginController(BaseController):
             return redirect_to(action='signin')
         if not c.user.banned:
             h.flash(_("You are not banned."))
-            return redirect_to(controller='statements', action='index')
+            return self.go_back()
 
         return render('login/account-banned.mako')
 
@@ -248,5 +255,5 @@ class LoginController(BaseController):
 
             return redirect_to(controller=controller, action=action, id=id, istrue=istrue)
         else:
-            return redirect_to(controller='statements', action='index')
+            return self.go_back()
 
