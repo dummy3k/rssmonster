@@ -4,8 +4,12 @@ Provides the BaseController class for subclassing.
 """
 from pylons.controllers import WSGIController
 from pylons.templating import render_mako as render
+from pylons import session, tmpl_context as c
 
 from rssmonster.model import meta
+
+import logging
+log = logging.getLogger(__name__)
 
 class BaseController(WSGIController):
 
@@ -21,13 +25,14 @@ class BaseController(WSGIController):
             
         self.__do_stuff__()
         
-    def __before__(self):
+    def __before__(self):                
         self.__do_stuff__()
         
     def __do_stuff__(self):
-        log.debug("Hi FOOOOOOOOOO")
         try:
             c.user = session['user']
-        except:
+            log.debug("Hi FOOOOOOOOOO")
+        except Exception as ex:
+            log.debug(ex)
             pass
             

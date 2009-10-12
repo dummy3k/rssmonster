@@ -1,5 +1,3 @@
-import logging
-
 from pylons import request, response, session, config, tmpl_context as c
 from pylons.controllers.util import abort, redirect_to
 
@@ -26,6 +24,8 @@ log = logging.getLogger(__name__)
 
 class LoginController(BaseController):
     def __before__(self):                
+        BaseController.__before__(self)
+        
         self.openid_session = session.get("openid_session", {})
         log.debug("__before__.openid_session %s" % self.openid_session)
         
