@@ -36,7 +36,13 @@
         <th>${_('language')}</th>
         <td>${c.feed.language}</td>
     </tr>
+    <tr>
+        <th>${_('entries')}</th>
+        <td>${c.feed.get_entry_count()}</td>
+    </tr>
 </table>
+
+<a href='${h.url_for(action='update', id=c.feed.id)}'>${_('update')}</a>&nbsp;
 
 <h1>Lastest Entries</h1>
 
