@@ -2,6 +2,7 @@ from sqlalchemy import *
 import meta
 import hashlib
 from datetime import datetime
+from feed_entries import FeedEntry
 
 feeds_table = Table('feeds', meta.metadata,
     Column('id', Integer, primary_key=True),
@@ -25,4 +26,8 @@ class Feed(object):
     def __repr__(self):
         return "<Feed()>"
         #return "<Feed('%s', '%s')>" % (self.name, self.openid)
+
+    def get_entry_count(self):
+        query = meta.Session.query(FeedEntry)
+        return query.filter_by(feed_id=self.id).count()
 

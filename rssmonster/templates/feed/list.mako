@@ -7,6 +7,7 @@
 <table border=1>
     <tr>
         <th>${_('id')}</th>
+        <th>${_('entries')}</th>
         <th>${_('title')}</th>
         <th>${_('url')}</th>
         <th>${_('last_fetch')}</th>
@@ -19,6 +20,7 @@
     % for feed in c.feeds:
     <tr>
         <td>${feed.id}</td>
+        <td>${feed.get_entry_count()}</td>
         <td>
             <a href ='${feed.link}'><img src='${feed.image}' width='16px' height='16px' /> ${feed.title}</a>
             <p>${feed.subtitle}</p>

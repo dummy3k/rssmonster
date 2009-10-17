@@ -11,17 +11,6 @@ import rssmonster.lib.helpers as h
 
 log = logging.getLogger(__name__)
 
-def __dump__(v):
-#    return 'Hello World'
-#    return str(dir(v))
-    html = "<p><b>Dir() </b> %s</p>" % str(dir(v))
-
-
-    for k in v.keys():    
-        html +="<p><b>%s =</b> %s</p>" % (k,v[k])
-        
-    return html
-
 def __find__(m, id):
     query = meta.Session.query(m)
     feed = query.filter(m.id == id).first()

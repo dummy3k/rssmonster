@@ -5,6 +5,8 @@
 
 <%def name="content()">
 
+<p>${h.dump(c.feed)}</p>
+
 <table border=1>
     <tr>
         <th>${_('id')}</th>
