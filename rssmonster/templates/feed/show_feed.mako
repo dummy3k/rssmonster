@@ -58,7 +58,7 @@
         <td>${entry.id}</td>
         <td>
             <a href='${entry.link}'>${entry.title}</a>
-            <p>${entry.summary}</p>
+            <p>${h.markdown(entry.summary, safe_mode="remove")}</p>
         </td>
         <td>${entry.uid}</td>
     </tr>
