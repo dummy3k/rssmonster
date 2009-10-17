@@ -8,3 +8,11 @@ a.spam {
 	color: grey;
 }
 
+.pager {
+	padding: 5px;
+}
+
+a.pager {
+	padding: 5px;
+}
+

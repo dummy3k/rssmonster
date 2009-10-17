@@ -46,6 +46,9 @@
 
 <h1>Lastest Entries</h1>
 
+##${c.pagelist | n}
+
+
 <table border=1>
     <tr>
         <th>${_('id')}</th>

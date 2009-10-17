@@ -53,9 +53,19 @@ class FeedController(BaseController):
 #        c.entries = query.filter(model.FeedEntry.feed_id == id)
 #        c.entries = c.feed.get_entries()
         c.entries = []
-        for e in c.feed.get_entries():
+        for e in c.feed.get_entries().order_by(model.FeedEntry.id.desc()).limit(10):
             e.is_spam=bayes.is_spam(e)
             c.entries.append(e)
+
+        from webhelpers import pagination
+        from webhelpers.pagination import links
+
+#   http://bel-epa.com/pylonsdocs/thirdparty/webhelpers/paginate.html
+#        total = len(c.entries)
+#        c.paginator, c.entries_p = pagination.paginate(c.entries, per_page=10, item_count=total)
+#        set_count = int(c.paginator.current)
+#        total_pages = len(c.paginator)
+#        c.pagelist = links.pagelist(c.paginator.current)
 
         c.rss_feeds = [
             {'title':'Unmodified',
