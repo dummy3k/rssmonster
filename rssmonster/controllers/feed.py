@@ -79,14 +79,27 @@ class FeedController(BaseController):
         cnt_added = 0;
         for entry in rss_reed['entries']:
 #            return __dump__(entry)
-            feed_entry = model.FeedEntry()
+
+            query = meta.Session.query(model.FeedEntry)
+            feed_entry = query.filter_by(feed_id = id, uid = entry['id']).first()
+            if not feed:
+                feed_entry = model.FeedEntry()
+                is_new = True
+            else:
+                is_new = False
+                
             feed_entry.feed_id = id
             feed_entry.uid = entry['id']
             feed_entry.title = entry['title']
             feed_entry.summary = entry['summary']
             feed_entry.link = entry['link']
-            meta.Session.save(feed_entry)
-            cnt_added+=1
+            
+            if is_new:
+                meta.Session.save(feed_entry)
+                cnt_added+=1
+            else:
+                meta.Session.update(feed_entry)
+                
 
         meta.Session.commit()
 #        return "added %s entries" % cnt_added
