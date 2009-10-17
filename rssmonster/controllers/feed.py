@@ -9,6 +9,7 @@ from rssmonster.model import meta
 import rssmonster.model as model
 import rssmonster.lib.helpers as h
 #import rssmonster.lib.feedConverter
+import bayes
 
 log = logging.getLogger(__name__)
 
@@ -50,7 +51,11 @@ class FeedController(BaseController):
 
 #        query = meta.Session.query(model.FeedEntry)
 #        c.entries = query.filter(model.FeedEntry.feed_id == id)
-        c.entries = c.feed.get_entries()
+#        c.entries = c.feed.get_entries()
+        c.entries = []
+        for e in c.feed.get_entries():
+            e.is_spam=bayes.is_spam(e)
+            c.entries.append(e)
 
         c.rss_feeds = [
             {'title':'Unmodified',

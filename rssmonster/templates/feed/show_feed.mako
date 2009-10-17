@@ -54,11 +54,12 @@
     </tr>
 
     % for entry in c.entries:
-    <tr>
+    <tr class='${h.iif(entry.is_spam, "spam", "")}'>
         <td>${entry.id}</td>
         <td>
-            <a href='${entry.link}'>${entry.title}</a>
+            <a href='${entry.link}' class='${h.iif(entry.is_spam, "spam", "")}'>${entry.title}</a>
             <p>${h.markdown(entry.summary, safe_mode="remove")}</p>
+            ${entry.is_spam}
         </td>
         <td>${entry.uid}</td>
     </tr>

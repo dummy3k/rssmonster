@@ -41,4 +41,9 @@ def dump(v):
                 
     return html
 
+def iif(expr, a, b):
+    if expr:
+        return a
+    else:
+        return b
 
