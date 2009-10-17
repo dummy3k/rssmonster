@@ -7,8 +7,28 @@ from rssmonster.lib.base import BaseController, render
 from rssmonster.model import meta
 import rssmonster.model as model
 import rssmonster.lib.helpers as h
+#import rssmonster.lib.feedConverter
 
 log = logging.getLogger(__name__)
+
+def __dump__(v):
+#    return 'Hello World'
+#    return str(dir(v))
+    html = "<p><b>Dir() </b> %s</p>" % str(dir(v))
+
+
+    for k in v.keys():    
+        html +="<p><b>%s =</b> %s</p>" % (k,v[k])
+        
+    return html
+
+def __find__(m, id):
+    query = meta.Session.query(m)
+    feed = query.filter(m.id == id).first()
+    if not feed: 
+        abort(404)
+
+    return feed    
 
 class FeedController(BaseController):
 
@@ -19,6 +39,9 @@ class FeedController(BaseController):
         return 'Hello World'
         
     def add(self):
+        if not request.params.get('url'):
+            return render('feed/add.mako')
+            
         feed = model.Feed()
         feed.url = request.params.get('url')
         meta.Session.save(feed)
@@ -37,4 +60,48 @@ class FeedController(BaseController):
         ]
         
         return render('feed/list.mako')
+        
+    def show_feed(self, id):
+        c.feed = __find__(model.Feed, id)
+        
+        query = meta.Session.query(model.FeedEntry)
+        c.entries = query.filter(model.FeedEntry.feed_id == id)
+        
+        return render('feed/show_feed.mako')
+
+    def update(self, id):
+        import feedparser
+
+        feed = __find__(model.Feed, id)
+        rss_reed = feedparser.parse(feed.url)
+ #       return __dump__(rss_reed.feed)
+
+        
+        feed.title = rss_reed.feed.title
+#        feed.last_builddate = rss_reed.feed.lastbuilddate
+#        feed.updated = rss_reed.feed.updated_parsed
+        feed.subtitle = rss_reed.feed.subtitle
+        feed.language = rss_reed.feed.language
+        feed.image = rss_reed.feed.image.href
+        feed.link = rss_reed.feed.link
+        meta.Session.update(feed)
+       
+
+        cnt_added = 0;
+        for entry in rss_reed['entries']:
+#            return __dump__(entry)
+            feed_entry = model.FeedEntry()
+            feed_entry.feed_id = id
+            feed_entry.uid = entry['id']
+            feed_entry.title = entry['title']
+            feed_entry.summary = entry['summary']
+            feed_entry.link = entry['link']
+            meta.Session.save(feed_entry)
+            cnt_added+=1
+
+        meta.Session.commit()
+#        return "added %s entries" % cnt_added
+        h.flash("added %s entries" % cnt_added)
+        return redirect_to(action='show_feed', Id=id)
+        
         

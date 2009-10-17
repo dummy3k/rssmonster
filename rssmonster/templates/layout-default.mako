@@ -19,7 +19,9 @@
 
     <h1>${self.title()}</h1>
     <div id="headmenu">
-        <a href="${h.url_for(controller='login', action='signout')}">Logout</a>
+        <a href="${h.url_for(controller='feed', action='add', id=None)}">Add Feed</a> |
+        <a href="${h.url_for(controller='feed', action='show_list', id=None)}">List Feeds</a> |
+        <a href="${h.url_for(controller='login', action='signout', id=None)}">Logout</a>
     </div>
     <% flashes = h.flash.pop_messages() %>
     % if flashes:

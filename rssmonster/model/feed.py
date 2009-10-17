@@ -7,7 +7,13 @@ feeds_table = Table('feeds', meta.metadata,
     Column('id', Integer, primary_key=True),
     Column('title', String(100)),
     Column('url', String(255)),
-    Column('last_update', DateTime),
+    Column('last_fetch', DateTime),
+    Column('last_builddate', DateTime),
+    Column('updated', DateTime),
+    Column('subtitle', String(100)),
+    Column('language', String(100)),
+    Column('image', String(100)),
+    Column('link', String(100)),
 )
 
 class Feed(object):

@@ -20,12 +20,13 @@ def make_map():
 
     # CUSTOM ROUTES HERE
 
-    map.connect('/', controller='login', action='index')
+    map.connect('/', controller='feed', action='show_list')
 
     map.connect('/add', controller='feed', action='add')
     map.connect('/list', controller='feed', action='show_list')
 
     map.connect('/{controller}/{action}')
+    map.connect('/{controller}/{action}/')
     map.connect('/{controller}/{action}/{id}')
     map.connect('/{controller}/', action='index')
 
