@@ -21,6 +21,22 @@ def dump(v):
             html +="<p><b>%s =</b> %s</p>" % (k,v[k])
     except AttributeError:
         pass
+
+    html += "<h1>Dict</h1>"
+    for k in dir(v):
+        try:
+            html +="<p><b>%s =</b> %s</p>" % (k,v[k])
+        except KeyError:
+            pass    
+        except TypeError:
+            pass    
+                
+    html += "<h1>__Dict__</h1>"
+    for k in dir(v):
+        try:
+            html +="<p><b>%s =</b> %s</p>" % (k,v.__dict__[k])
+        except KeyError:
+            pass    
                 
     return html
 

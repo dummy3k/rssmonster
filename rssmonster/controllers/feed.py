@@ -2,6 +2,7 @@ import logging
 
 from pylons import request, response, session, tmpl_context as c
 from pylons.controllers.util import abort, redirect_to
+from webhelpers.feedgenerator import Atom1Feed
 
 from rssmonster.lib.base import BaseController, render
 from rssmonster.model import meta
@@ -42,19 +43,21 @@ class FeedController(BaseController):
     def show_list(self):
         query = meta.Session.query(model.Feed)
         c.feeds = query.all()
-        c.links = [
-            ('James','http://jimmyg.org'),
-            ('Ben','http://groovie.org'),
-            ('Philip',''),
-        ]
-        
         return render('feed/list.mako')
         
     def show_feed(self, id):
         c.feed = __find__(model.Feed, id)
+
+#        query = meta.Session.query(model.FeedEntry)
+#        c.entries = query.filter(model.FeedEntry.feed_id == id)
+        c.entries = c.feed.get_entries()
+
+        c.rss_feeds = [
+            {'title':'Unmodified',
+             'link':h.url_for(action='pipe')
+            }
+        ]
         
-        query = meta.Session.query(model.FeedEntry)
-        c.entries = query.filter(model.FeedEntry.feed_id == id)
         
         return render('feed/show_feed.mako')
 
@@ -65,7 +68,6 @@ class FeedController(BaseController):
         rss_reed = feedparser.parse(feed.url)
  #       return __dump__(rss_reed.feed)
 
-        
         feed.title = rss_reed.feed.title
 #        feed.last_builddate = rss_reed.feed.lastbuilddate
 #        feed.updated = rss_reed.feed.updated_parsed
@@ -79,8 +81,6 @@ class FeedController(BaseController):
 
         cnt_added = 0;
         for entry in rss_reed['entries']:
-#            return __dump__(entry)
-
             query = meta.Session.query(model.FeedEntry)
             feed_entry = query.filter_by(feed_id = id, uid = entry['id']).first()
             if not feed_entry:
@@ -103,8 +103,23 @@ class FeedController(BaseController):
                 
 
         meta.Session.commit()
-#        return "added %s entries" % cnt_added
         h.flash("added %s entries" % cnt_added)
         return redirect_to(action='show_feed', Id=id)
         
-        
+    def pipe(self, id):
+        feed_data = __find__(model.Feed, id)
+        feed = Atom1Feed(
+            title=feed_data.title,
+            link=feed_data.link,
+            description=feed_data.subtitle,
+            language=feed_data.language,
+        )
+
+        for entry in feed_data.get_entries():
+            feed.add_item(title=entry.title,
+                          link=entry.link,
+                          description=entry.summary)
+
+        response.content_type = 'application/atom+xml'
+        return feed.writeString('utf-8')
+                

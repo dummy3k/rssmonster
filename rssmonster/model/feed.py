@@ -31,3 +31,7 @@ class Feed(object):
         query = meta.Session.query(FeedEntry)
         return query.filter_by(feed_id=self.id).count()
 
+    def get_entries(self):
+        query = meta.Session.query(FeedEntry)
+        return query.filter(FeedEntry.feed_id == self.id)
+    

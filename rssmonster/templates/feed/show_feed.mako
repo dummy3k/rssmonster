@@ -5,7 +5,7 @@
 
 <%def name="content()">
 
-<p>${h.dump(c.feed)}</p>
+##<p>${h.dump(c.feed)}</p>
 
 <table border=1>
     <tr>

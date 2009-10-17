@@ -14,6 +14,10 @@
 ##    <link rel="shortcut icon" href="/ico/logo.ico" type="image/x-icon">
 ##    <link rel="alternate" type="application/rss+xml" title="Wahrheitsmaschine: Neuste Thesen und Argumente" href="http://www.wahrheitsmaschine.de/latest-rss.xml" />
 ##    <link rel="alternate" type="application/rss+xml" title="Arguments for this thesis" href="http://www.wahrheitsmaschine.de/statement-43-rss.xml" />
+
+    % for x in c.rss_feeds:
+    <link rel="alternate" type="application/rss+xml" title="${x['title']}" href="${x['link']}" />
+    % endfor
 </head>
 <body>
 
