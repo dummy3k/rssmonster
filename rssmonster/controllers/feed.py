@@ -71,7 +71,8 @@ class FeedController(BaseController):
 #        feed.updated = rss_reed.feed.updated_parsed
         feed.subtitle = rss_reed.feed.subtitle
         feed.language = rss_reed.feed.language
-        feed.image = rss_reed.feed.image.href
+        if 'image' in rss_reed.feed:
+            feed.image = rss_reed.feed.image.href
         feed.link = rss_reed.feed.link
         meta.Session.update(feed)
        
@@ -82,7 +83,7 @@ class FeedController(BaseController):
 
             query = meta.Session.query(model.FeedEntry)
             feed_entry = query.filter_by(feed_id = id, uid = entry['id']).first()
-            if not feed:
+            if not feed_entry:
                 feed_entry = model.FeedEntry()
                 is_new = True
             else:
