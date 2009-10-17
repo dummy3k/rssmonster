@@ -1,6 +1,8 @@
 <%inherit file="/layout-default.mako"/>\
 <%import rssmonster.lib.helpers as h %>
 
+<%def name="title()">Sign in</%def>
+
 <%def name="content()">
     <h1>${_('Sign in with OpenID')}</h1>
 

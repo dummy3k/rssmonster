@@ -161,6 +161,7 @@ class LoginController(BaseController):
             session['user'] = user
             session.save()
             log.debug('on verified before session check')
+            log.debug('user = %s' % dir(user))
 #            if 'redirected_from' in session:
 #                url = session['redirected_from']
 #                del(session['redirected_from'])

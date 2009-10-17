@@ -29,9 +29,13 @@ class BaseController(WSGIController):
         self.__do_stuff__()
         
     def __do_stuff__(self):
-        try:
+        if 'user' in session:
             c.user = session['user']
-        except Exception as ex:
-            log.debug(ex)
-            pass
+            log.debug("Yeah!")
+
+#        try:
+#            c.user = session['user']
+#        except Exception as ex:
+#            log.debug("exception: %s" % ex)
+#            pass
             
