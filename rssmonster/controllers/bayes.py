@@ -11,15 +11,16 @@ import rssmonster.model as model
 log = logging.getLogger(__name__)
 
 class Guesser():
-    def __init__(self, feed):
+    def __init__(self, feed, user):
         import os.path
         from reverend.thomas import Bayes
         
+        self.user = user
         self.filename = config['bayes_dir']
-#        self.filename += "/users/" + c.user.id
+        self.filename += "/users/%s" % user.id
         if not os.path.exists(self.filename):
             os.makedirs(self.filename)
-        self.filename += '/feed_%s.bayes' % feed.id
+        self.filename += '/feed_%s.bayes' % str(feed.id)
         log.debug("filename:%s" % self.filename)
 
         self.trainer = Bayes()
@@ -33,12 +34,9 @@ class Guesser():
         self.trainer.save(self.filename)
 
     def is_spam(self, entry):
-        if not c.user:
-            return redirect_to(controller='login', action='signin', id=None, return_to=h.url_for())
-            
         classy = meta.Session\
                 .query(model.Classification)\
-                .filter_by(user_id = c.user.id, entry_id=entry.id).first()
+                .filter_by(user_id = self.user.id, entry_id=entry.id).first()
         if classy:
             if classy.pool == 'spam':
                 return True
@@ -106,7 +104,7 @@ class BayesController(BaseController):
             
         meta.Session.commit()
 
-        guesser = Guesser(feed)
+        guesser = Guesser(feed, c.user)
         guesser.trainer.train(pool, entry.title) #, entry.id
         
         if pool == 'spam':
@@ -125,10 +123,13 @@ class BayesController(BaseController):
         return redirect_to(controller='feed', action='show_feed', id=entry.feed_id)
 
     def show_score(self, id):
+        if not c.user:
+            return redirect_to(controller='login', action='signin', id=None, return_to=h.url_for())
+
         c.entry = meta.find(model.FeedEntry, id) 
         
         feed = meta.find(model.Feed, c.entry.feed_id)
-        guesser = Guesser(feed)
+        guesser = Guesser(feed, c.user)
         guess = guesser.guess(c.entry)
 
 #        guesser.trainer.train('spam', c.entry.title)
@@ -142,11 +143,13 @@ class BayesController(BaseController):
         return render('bayes/score.mako')
         
     def show_guesser(self, id):
-        import operator
-        
-        c.feed = meta.find(model.Feed, id)
+        if not c.user:
+            return redirect_to(controller='login', action='signin', id=None, return_to=h.url_for())
 
-        guesser = Guesser(c.feed)
+        c.feed = meta.find(model.Feed, id)
+        guesser = Guesser(c.feed, c.user)
+
+        import operator
         c.pool_data_spam = guesser.trainer.poolData('spam')
         c.pool_data_spam.sort(key=operator.itemgetter(1))
         c.pool_data_spam.reverse()
@@ -159,9 +162,8 @@ class BayesController(BaseController):
                         'text':'Feed Details'}]
         return render('bayes/guesser.mako')
     
-    def mixed_rss(self, id):
-        #from webhelpers.feedgenerator import Atom1Feed, Rss201rev2Feed
-        
+    def mixed_rss(self, user_id, id):
+        user = meta.find(model.User, user_id)
         feed_data = meta.find(model.Feed, id)
         feed = h.DefaultFeed(
             title=feed_data.title,
@@ -170,7 +172,7 @@ class BayesController(BaseController):
             language=feed_data.language,
         )
 
-        guesser = Guesser(feed_data)
+        guesser = Guesser(feed_data, user)
         for entry in feed_data.get_entries():
             if guesser.is_spam(entry):
                 titel = "[SPAM] %s" % entry.title

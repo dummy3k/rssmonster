@@ -26,6 +26,7 @@ def make_map():
     map.connect('/list', controller='feed', action='show_list')
     map.connect('/feed/{id}', controller='feed', action='show_feed')
     map.connect('/signout', controller='login', action='signout')
+    map.connect('/user/{user_id}/{controller}/{action}/{id}')
 
     map.connect('/{controller}/{action}')
     map.connect('/{controller}/{action}/')

@@ -33,12 +33,15 @@ class FeedController(BaseController):
         return render('feed/list.mako')
         
     def show_feed(self, id):
+        if not c.user:
+            return redirect_to(controller='login', action='signin', id=None, return_to=h.url_for())
+
         c.feed = meta.find(model.Feed, id)
 
 #        query = meta.Session.query(model.FeedEntry)
 #        c.entries = query.filter(model.FeedEntry.feed_id == id)
 #        c.entries = c.feed.get_entries()
-        guesser = bayes.Guesser(c.feed)
+        guesser = bayes.Guesser(c.feed, c.user)
         c.entries = []
         query = c.feed.get_entries().order_by(model.FeedEntry.id.desc())
         for e in query: #.limit(10):
@@ -65,7 +68,7 @@ class FeedController(BaseController):
              'link':h.url_for(action='pipe')
             },
             {'title':'Mixed',
-             'link':h.url_for(controller='bayes', action='mixed_rss')
+             'link':h.url_for(controller='bayes', action='mixed_rss', user_id=c.user.id)
             }
         ]
         
@@ -73,12 +76,15 @@ class FeedController(BaseController):
         return render('feed/show_feed.mako')
 
     def update(self, id):
+        feed = meta.find(model.Feed, id)
+        cnt_added = self.__update__(feed)
+        h.flash("added %s entries" % cnt_added)
+        return h.go_back()
+    
+    def __update__(self, feed):
         import feedparser
 
-        feed = meta.find(model.Feed, id)
         rss_reed = feedparser.parse(feed.url)
- #       return __dump__(rss_reed.feed)
-
         feed.title = rss_reed.feed.title
 #        feed.last_builddate = rss_reed.feed.lastbuilddate
 #        feed.updated = rss_reed.feed.updated_parsed
@@ -88,19 +94,18 @@ class FeedController(BaseController):
             feed.image = rss_reed.feed.image.href
         feed.link = rss_reed.feed.link
         meta.Session.update(feed)
-       
 
         cnt_added = 0;
         for entry in rss_reed['entries']:
             query = meta.Session.query(model.FeedEntry)
-            feed_entry = query.filter_by(feed_id = id, uid = entry['id']).first()
+            feed_entry = query.filter_by(feed_id = feed.id, uid = entry['id']).first()
             if not feed_entry:
                 feed_entry = model.FeedEntry()
                 is_new = True
             else:
                 is_new = False
                 
-            feed_entry.feed_id = id
+            feed_entry.feed_id = feed.id
             feed_entry.uid = entry['id']
             feed_entry.title = entry['title']
             if 'summary' in entry:
@@ -115,12 +120,13 @@ class FeedController(BaseController):
                 
 
         meta.Session.commit()
-        h.flash("added %s entries" % cnt_added)
+        return cnt_added
         
-        return h.go_back()
         
     def pipe(self, id):
         feed_data = meta.find(model.Feed, id)
+        cnt_added = self.__update__(feed_data)
+
         feed = h.DefaultFeed(
             title=feed_data.title,
             link=feed_data.link,

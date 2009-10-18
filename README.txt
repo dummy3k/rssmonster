@@ -6,7 +6,7 @@ Installation and Setup
 
 Install ``rssmonster`` using easy_install::
 
-    easy_install rssmonster
+    easy_install rssmonster SQLAlchemy Pylons SQLAlchemy-migrate
 
 Make a config file as follows::
 
