@@ -119,13 +119,13 @@ class FeedController(BaseController):
 
     def update(self, id):
         feed = meta.find(model.Feed, id)
-        cnt_added = self.__update__(feed)
+        cnt_added = __update__(feed)
         h.flash("added %s entries" % cnt_added)
         return h.go_back()
 
     def pipe(self, id):
         feed_data = meta.find(model.Feed, id)
-        cnt_added = self.__update__(feed_data)
+        cnt_added = __update__(feed_data)
 
         feed = h.DefaultFeed(
             title=feed_data.title,
