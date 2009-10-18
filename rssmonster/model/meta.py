@@ -17,7 +17,8 @@ metadata = MetaData()
 def find(m, id):
     query = Session.query(m)
     feed = query.filter(m.id == id).first()
-    if not feed: 
+    if not feed:
+        from pylons.controllers.util import abort
         abort(404)
 
     return feed    

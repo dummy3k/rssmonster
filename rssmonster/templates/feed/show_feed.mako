@@ -73,6 +73,7 @@
             % else:
             <a href='${h.url_for(controller='bayes', action='mark_as_spam', id=entry.id)}'>${_('Spam')}</a>&nbsp;
             % endif
+            <a href='${h.url_for(controller='bayes', action='untrain', id=entry.id)}'>${_('Untrain')}</a>&nbsp;
             <a href='${h.url_for(controller='bayes', action='show_score', id=entry.id)}'>${_('Score')}</a>&nbsp;
         </td>
     </tr>
