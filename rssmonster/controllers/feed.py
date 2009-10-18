@@ -44,9 +44,13 @@ class FeedController(BaseController):
 #        query = meta.Session.query(model.FeedEntry)
 #        c.entries = query.filter(model.FeedEntry.feed_id == id)
 #        c.entries = c.feed.get_entries()
+        guesser = bayes.Guesser(c.feed)
         c.entries = []
         for e in c.feed.get_entries().order_by(model.FeedEntry.id.desc()).limit(10):
-            e.is_spam=bayes.is_spam(e)
+            e.is_spam=guesser.is_spam(e)
+            e.score = guesser.guess(e)
+            
+            
             c.entries.append(e)
 
         from webhelpers import pagination

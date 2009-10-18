@@ -54,6 +54,8 @@
     <tr>
         <th>${_('id')}</th>
         <th>${_('title')}</th>
+        <th>${_('Spam')}</th>
+        <th>${_('Ham')}</th>
         <th>&nbsp;</th>
     </tr>
 
@@ -63,11 +65,12 @@
         <td>
             <a href='${entry.link}' class='${h.iif(entry.is_spam, "spam", "")}'>${entry.title}</a>
             <p>${h.markdown(entry.summary, safe_mode="remove")}</p>
-            ${entry.is_spam}
         </td>
+        <td>${entry.score['spam']}</td>
+        <td>${entry.score['ham']}</td>
         <td>
             <a href='${h.url_for(controller='bayes', action='mark_as_spam', id=entry.id)}'>${_('Spam')}</a>&nbsp;
-            <a href='${h.url_for(controller='bayes', action='show_score', id=c.feed.id)}'>${_('Score')}</a>&nbsp;
+            <a href='${h.url_for(controller='bayes', action='show_score', id=entry.id)}'>${_('Score')}</a>&nbsp;
         </td>
     </tr>
     %endfor

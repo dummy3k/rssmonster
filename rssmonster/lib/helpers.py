@@ -15,7 +15,8 @@ flash = _Flash()
 def dump(v):
 #    return 'Hello World'
 #    return str(dir(v))
-    html = "<p><b>Dir() </b> %s</p>" % str(dir(v))
+    html = "<p><b>str() </b> %s</p>" % str(v)
+    html += "<p><b>Dir() </b> %s</p>" % str(dir(v))
 
     try:
         for k in v.keys():    
@@ -38,6 +39,8 @@ def dump(v):
             html +="<p><b>%s =</b> %s</p>" % (k,v.__dict__[k])
         except KeyError:
             pass    
+        except AttributeError:
+            pass
                 
     return html
 

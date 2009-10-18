@@ -10,9 +10,6 @@ import rssmonster.model as model
 
 log = logging.getLogger(__name__)
 
-def is_spam(entry):
-    return (entry.id % 2 == 0)
-
 class Guesser():
     def __init__(self, feed):
         import os.path
@@ -33,6 +30,27 @@ class Guesser():
 
     def save(self):
         self.trainer.save(self.filename)
+
+    def is_spam(self, entry):
+        g = self.guess(entry)
+
+        if g['spam'] and not g['ham']:
+            return True
+            
+        if not g['spam'] and g['ham']:
+            return False
+            
+        return (g['spam'] > g['ham'])
+
+    def guess(self, entry):
+        ret = dict(self.trainer.guess(entry.title))
+        if not 'spam' in ret:
+            ret['spam'] = None
+        if not 'ham' in ret:
+            ret['ham'] = None
+        
+        return ret
+            
 
 class BayesController(BaseController):
 
@@ -74,6 +92,8 @@ class BayesController(BaseController):
         c.pool_data.sort(key=operator.itemgetter(1))
         c.pool_data.reverse()
         
+        c.actions = [{'link':h.url_for(controller='feed', action='show_feed', id=id),
+                        'text':'Feed Details'}]
         return render('bayes/guesser.mako')
     
         

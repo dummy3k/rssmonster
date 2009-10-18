@@ -24,6 +24,9 @@
 
     <h1>${self.title()}</h1>
     <div id="headmenu">
+        % for x in c.actions:
+        <a href="${x['link']}">${x['text']}</a> |
+        % endfor
         <a href="${h.url_for(controller='feed', action='add', id=None)}">Add Feed</a> |
         <a href="${h.url_for(controller='feed', action='show_list', id=None)}">List Feeds</a> |
         <a href="${h.url_for(controller='login', action='signout', id=None)}">Logout</a>
