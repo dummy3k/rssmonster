@@ -10,10 +10,19 @@ import rssmonster.model as model
 
 log = logging.getLogger(__name__)
 
+def __relevant__(entry):
+    if entry.summary:
+        return entry.title + " " + entry.summary
+    else:
+        return entry.title
+
+#def 
+from reverend.thomas import Bayes
+    
 class Guesser():
+    
     def __init__(self, feed, user):
         import os.path
-        from reverend.thomas import Bayes
         
         self.user = user
         self.filename = config['bayes_dir']
@@ -33,6 +42,11 @@ class Guesser():
     def save(self):
         self.trainer.save(self.filename)
 
+    def clear(self):
+        self.trainer = Bayes()
+        self.trainer.newPool('ham')
+        self.trainer.newPool('spam')
+    
     def is_spam(self, entry):
         classy = meta.Session\
                 .query(model.Classification)\
@@ -56,7 +70,12 @@ class Guesser():
         return (g['spam'] > g['ham'])
 
     def guess(self, entry):
-        ret = dict(self.trainer.guess(entry.title))
+        log.debug("__relevant__(entry) %s" % __relevant__(entry))
+        log.debug("__relevant__(entry) %s" % self.trainer.guess(__relevant__(entry)))
+        log.debug('self.filename: %s' % self.filename)
+#        ret = dict(self.trainer.guess(__relevant__(entry)))
+        ret = dict(self.trainer.guess(__relevant__(entry)))
+        log.debug("ret: %s" % ret)
         if not 'spam' in ret:
             ret['spam'] = None
         if not 'ham' in ret:
@@ -105,7 +124,7 @@ class BayesController(BaseController):
         meta.Session.commit()
 
         guesser = Guesser(feed, c.user)
-        guesser.trainer.train(pool, entry.title) #, entry.id
+        guesser.trainer.train(pool, __relevant__(entry)) #, entry.id
         
         if pool == 'spam':
             other_pool = 'ham'
@@ -114,12 +133,10 @@ class BayesController(BaseController):
         else:
             raise "bad pool"
             
-        guesser.trainer.untrain(other_pool, entry.title) #, untrain_id
+        guesser.trainer.untrain(other_pool, __relevant__(entry)) #, untrain_id
         guesser.save()
 
-        
-        
-        h.flash("now known as %s: %s" % (pool, entry.title))
+        h.flash("now known as %s: %s" % (pool, entry.id))
         return redirect_to(controller='feed', action='show_feed', id=entry.feed_id)
 
     def show_score(self, id):
@@ -137,6 +154,7 @@ class BayesController(BaseController):
         log.debug("c.entry.title: %s" % c.entry.title)
         
         c.score = str(guess)
+        c.score = guesser.guess(c.entry)
         c.pool = guesser.trainer.poolData('spam')
         c.is_spam = guesser.is_spam(c.entry)
 
@@ -149,7 +167,7 @@ class BayesController(BaseController):
         c.pool_data_ham.sort(key=operator.itemgetter(1))
         c.pool_data_ham.reverse()
         
-        c.tokens = set(guesser.trainer.getTokens(c.entry.title))
+        c.tokens = set(guesser.trainer.getTokens(__relevant__(c.entry)))
         
         c.actions = [{'link':h.url_for(controller='feed', action='show_feed', id=feed.id),
                         'text':'Feed Details'}]
@@ -213,16 +231,21 @@ class BayesController(BaseController):
             return redirect_to(controller='login', action='signin', id=None, return_to=h.url_for())
 
         c.feed = meta.find(model.Feed, id)
-        guesser = Guesser(c.feed, c.user)
 
         query = meta.Session\
                 .query(model.Classification)\
                 .join(model.FeedEntry)\
                 .filter_by(feed_id=id)
 
-        for foo in query:
-            h.flash(" :%s" % foo)
+        guesser = Guesser(c.feed, c.user)
+        guesser.clear()
 
-        h.flash("i did it again")
+        cnt = 0
+        for entry in query:
+            h.flash(" :%s" % __relevant__(entry.entry))
+            guesser.trainer.train(entry.pool, __relevant__(entry.entry))
+            cnt+=1
+
+        h.flash("learned %s entries" % cnt)
         return h.go_back()
     
