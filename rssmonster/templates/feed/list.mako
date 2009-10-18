@@ -32,7 +32,7 @@
         <td>${feed.language}</td>
         <td>
             <a href='${h.url_for(action='show_feed', id=feed.id)}'>${_('Show')}</a>&nbsp;
-            <a href='${h.url_for(action='update', id=feed.id)}'>${_('update')}</a>&nbsp;
+            <a href='${h.url_for(action='update', id=feed.id, return_to=h.url_for())}'>${_('update')}</a>&nbsp;
 ##            <a href='${h.url_for(action='rss', id=feed.id)}'>${_('Rss')}</a>&nbsp;
 ##            <a href='${h.url_for(action='delete')}'>${_('Delete')}</a>
        </td>

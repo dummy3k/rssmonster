@@ -7,6 +7,7 @@
     <h1>${_('Sign in with OpenID')}</h1>
 
     <form id="signin-form" method="post" action="${h.url_for(controller='login', action='signin_POST')}">
+        <input type='hidden' name='return_to' value='${c.return_to}' />
         <table border="0">
             <tr>
                 <td>

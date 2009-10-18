@@ -113,7 +113,8 @@ class FeedController(BaseController):
 
         meta.Session.commit()
         h.flash("added %s entries" % cnt_added)
-        return redirect_to(action='show_feed', id=id)
+        
+        return h.go_back()
         
     def pipe(self, id):
         feed_data = meta.find(model.Feed, id)

@@ -66,9 +66,7 @@ class BayesController(BaseController):
         guesser.trainer.train('spam', entry.title, entry.id)
         guesser.trainer.untrain('ham', entry.title, entry.id)
         guesser.save()
-        
-        h.flash("c.user.id: %s" % c.user.id)
-                
+
         classy = model.Classification()
         classy.user_id = c.user.id
         classy.entry_id = id
@@ -79,7 +77,7 @@ class BayesController(BaseController):
         
         h.flash("i understand that you don't like: %s" % entry.title)
         return redirect_to(controller='feed', action='show_feed', id=entry.feed_id)
-        
+
     def mark_as_ham(self, id):
         entry = meta.find(model.FeedEntry, id) 
         feed = meta.find(model.Feed, entry.feed_id)
