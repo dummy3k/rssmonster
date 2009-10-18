@@ -13,6 +13,48 @@ import bayes
 
 log = logging.getLogger(__name__)
 
+def __update__(feed):
+    import feedparser
+
+    rss_reed = feedparser.parse(feed.url)
+    feed.title = rss_reed.feed.title
+#        feed.last_builddate = rss_reed.feed.lastbuilddate
+#        feed.updated = rss_reed.feed.updated_parsed
+    feed.subtitle = rss_reed.feed.subtitle
+    feed.language = rss_reed.feed.language
+    if 'image' in rss_reed.feed:
+        feed.image = rss_reed.feed.image.href
+    feed.link = rss_reed.feed.link
+    meta.Session.update(feed)
+
+    cnt_added = 0;
+    for entry in rss_reed['entries']:
+        query = meta.Session.query(model.FeedEntry)
+        feed_entry = query.filter_by(feed_id = feed.id, uid = entry['id']).first()
+        if not feed_entry:
+            feed_entry = model.FeedEntry()
+            is_new = True
+        else:
+            is_new = False
+            
+        feed_entry.feed_id = feed.id
+        feed_entry.uid = entry['id']
+        feed_entry.title = entry['title']
+        if 'summary' in entry:
+            feed_entry.summary = entry['summary']
+        feed_entry.link = entry['link']
+        
+        if is_new:
+            meta.Session.save(feed_entry)
+            cnt_added+=1
+        else:
+            meta.Session.update(feed_entry)
+            
+
+    meta.Session.commit()
+    return cnt_added
+    
+
 class FeedController(BaseController):
 
     def add(self):
@@ -80,49 +122,7 @@ class FeedController(BaseController):
         cnt_added = self.__update__(feed)
         h.flash("added %s entries" % cnt_added)
         return h.go_back()
-    
-    def __update__(self, feed):
-        import feedparser
 
-        rss_reed = feedparser.parse(feed.url)
-        feed.title = rss_reed.feed.title
-#        feed.last_builddate = rss_reed.feed.lastbuilddate
-#        feed.updated = rss_reed.feed.updated_parsed
-        feed.subtitle = rss_reed.feed.subtitle
-        feed.language = rss_reed.feed.language
-        if 'image' in rss_reed.feed:
-            feed.image = rss_reed.feed.image.href
-        feed.link = rss_reed.feed.link
-        meta.Session.update(feed)
-
-        cnt_added = 0;
-        for entry in rss_reed['entries']:
-            query = meta.Session.query(model.FeedEntry)
-            feed_entry = query.filter_by(feed_id = feed.id, uid = entry['id']).first()
-            if not feed_entry:
-                feed_entry = model.FeedEntry()
-                is_new = True
-            else:
-                is_new = False
-                
-            feed_entry.feed_id = feed.id
-            feed_entry.uid = entry['id']
-            feed_entry.title = entry['title']
-            if 'summary' in entry:
-                feed_entry.summary = entry['summary']
-            feed_entry.link = entry['link']
-            
-            if is_new:
-                meta.Session.save(feed_entry)
-                cnt_added+=1
-            else:
-                meta.Session.update(feed_entry)
-                
-
-        meta.Session.commit()
-        return cnt_added
-        
-        
     def pipe(self, id):
         feed_data = meta.find(model.Feed, id)
         cnt_added = self.__update__(feed_data)

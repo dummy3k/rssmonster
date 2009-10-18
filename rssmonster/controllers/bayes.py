@@ -165,6 +165,10 @@ class BayesController(BaseController):
     def mixed_rss(self, user_id, id):
         user = meta.find(model.User, user_id)
         feed_data = meta.find(model.Feed, id)
+        
+        import feed
+        cnt_added = feed.__update__(feed_data)
+
         feed = h.DefaultFeed(
             title=feed_data.title,
             link=feed_data.link,
