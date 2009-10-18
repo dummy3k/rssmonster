@@ -130,4 +130,28 @@ class BayesController(BaseController):
 
         return redirect_to(action='show_guesser', id=c.entry.feed_id)
             
+    def mixed_rss(self, id):
+        #from webhelpers.feedgenerator import Atom1Feed, Rss201rev2Feed
         
+        feed_data = meta.find(model.Feed, id)
+        feed = h.DefaultFeed(
+            title=feed_data.title,
+            link=feed_data.link,
+            description="TESTING",
+            language=feed_data.language,
+        )
+
+        guesser = Guesser(feed_data)
+        for entry in feed_data.get_entries():
+            if guesser.is_spam(entry):
+                titel = "[SPAM] %s" % entry.title
+            else:
+                titel = entry.title
+                
+            feed.add_item(title=titel,
+                          link=entry.link,
+                          description=entry.summary)
+
+        response.content_type = 'application/atom+xml'
+        return feed.writeString('utf-8')
+    

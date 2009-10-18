@@ -63,6 +63,9 @@ class FeedController(BaseController):
         c.rss_feeds = [
             {'title':'Unmodified',
              'link':h.url_for(action='pipe')
+            },
+            {'title':'Mixed',
+             'link':h.url_for(controller='bayes', action='mixed_rss')
             }
         ]
         
@@ -118,7 +121,7 @@ class FeedController(BaseController):
         
     def pipe(self, id):
         feed_data = meta.find(model.Feed, id)
-        feed = Atom1Feed(
+        feed = h.DefaultFeed(
             title=feed_data.title,
             link=feed_data.link,
             description=feed_data.subtitle,

@@ -10,11 +10,14 @@ from webhelpers.pylonslib import Flash as _Flash
 from routes import url_for
 from webhelpers.html.converters import markdown
 
+#http://pylonshq.com/docs/en/0.9.7/thirdparty/webhelpers/feedgenerator/
+# Atom1Feed:
+#   - does not support feed description(?)
+from webhelpers.feedgenerator import Rss201rev2Feed as DefaultFeed
+
 flash = _Flash()
 
 def dump(v):
-#    return 'Hello World'
-#    return str(dir(v))
     html = "<p><b>str() </b> %s</p>" % str(v)
     html += "<p><b>Dir() </b> %s</p>" % str(dir(v))
 
