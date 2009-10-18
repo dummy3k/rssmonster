@@ -150,9 +150,8 @@ class BayesController(BaseController):
         
         c.tokens = set(guesser.trainer.getTokens(c.entry.title))
         
-        c.actions = [{'link':h.url_for(controller='feed', action='show_feed', id=id),
+        c.actions = [{'link':h.url_for(controller='feed', action='show_feed', id=feed.id),
                         'text':'Feed Details'}]
-
         return render('bayes/score.mako')
         
     def show_guesser(self, id):
@@ -188,6 +187,9 @@ class BayesController(BaseController):
             description="TESTING",
             language=feed_data.language,
         )
+
+        c.base_url = config['base_url']
+        log.debug('c.base_url: %s' % c.base_url)
 
         guesser = Guesser(feed_data, user)
         for entry in feed_data.get_entries():
