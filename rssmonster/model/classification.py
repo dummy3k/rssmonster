@@ -12,13 +12,16 @@ classifications_table = Table('classifications_entries', meta.metadata,
 )
 
 class Classification(object):
+    def __init__(self):
+        self.name = 'Classification'
+        
     def __unicode__(self):
+        return u"<Classification(%s, %s)>" % (self.user_id, self.entry_id)
         return self.name
 
     __str__ = __unicode__
 
     def __repr__(self):
-        return "<Feed()>"
-        #return "<Feed('%s', '%s')>" % (self.name, self.openid)
+        return u"<Classification(%s, %s)>" % (self.user_id, self.entry_id)
 
 

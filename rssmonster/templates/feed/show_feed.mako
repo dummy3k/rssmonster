@@ -44,6 +44,7 @@
 
 <a href='${h.url_for(action='update', id=c.feed.id, return_to=h.url_for())}'>${_('Update')}</a>&nbsp;
 <a href='${h.url_for(controller='bayes', action='show_guesser', id=c.feed.id)}'>${_('Guesser Details')}</a>&nbsp;
+<a href='${h.url_for(controller='bayes', action='redo', id=c.feed.id, return_to=h.url_for())}'>${_('ReDo')}</a>&nbsp;
 
 <h1>Lastest Entries</h1>
 

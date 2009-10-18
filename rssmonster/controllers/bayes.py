@@ -129,6 +129,7 @@ class BayesController(BaseController):
         c.entry = meta.find(model.FeedEntry, id) 
         
         feed = meta.find(model.Feed, c.entry.feed_id)
+        c.feed = feed
         guesser = Guesser(feed, c.user)
         guess = guesser.guess(c.entry)
 
@@ -206,4 +207,22 @@ class BayesController(BaseController):
 
         response.content_type = 'application/atom+xml'
         return feed.writeString('utf-8')
+        
+    def redo(self, id):
+        if not c.user:
+            return redirect_to(controller='login', action='signin', id=None, return_to=h.url_for())
+
+        c.feed = meta.find(model.Feed, id)
+        guesser = Guesser(c.feed, c.user)
+
+        query = meta.Session\
+                .query(model.Classification)\
+                .join(model.FeedEntry)\
+                .filter_by(feed_id=id)
+
+        for foo in query:
+            h.flash(" :%s" % foo)
+
+        h.flash("i did it again")
+        return h.go_back()
     
