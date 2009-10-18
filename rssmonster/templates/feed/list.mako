@@ -4,7 +4,7 @@
 <%def name="title()">All feeds</%def>
 
 <%def name="content()">
-<table border=1>
+<table>
     <tr>
         <th>${_('id')}</th>
         <th>${_('entries')}</th>
@@ -22,7 +22,7 @@
         <td>${feed.id}</td>
         <td>${feed.get_entry_count()}</td>
         <td>
-            <a href ='${feed.link}'><img src='${feed.image}' width='16px' height='16px' /> ${feed.title}</a>
+            <a href ='${feed.link}'><img src='${feed.image}' width='16px' height='16px' alt='logo'/> ${feed.title}</a>
             <p>${feed.subtitle}</p>
         </td>
         <td>${feed.url}</td>
