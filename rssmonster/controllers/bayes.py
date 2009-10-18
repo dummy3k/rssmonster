@@ -178,14 +178,16 @@ class BayesController(BaseController):
 
         guesser = Guesser(feed_data, user)
         for entry in feed_data.get_entries():
-            if guesser.is_spam(entry):
+            c.entry = entry
+            c.entry.is_spam=guesser.is_spam(entry)
+            if c.entry.is_spam:
                 titel = "[SPAM] %s" % entry.title
             else:
                 titel = entry.title
-                
+
             feed.add_item(title=titel,
                           link=entry.link,
-                          description=entry.summary)
+                          description=render('bayes/rss_summary.mako')) #entry.summary
 
         response.content_type = 'application/atom+xml'
         return feed.writeString('utf-8')
