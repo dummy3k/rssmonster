@@ -47,8 +47,7 @@
 
 <h1>Lastest Entries</h1>
 
-##${c.pagelist | n}
-
+<p>${c.page.pager()}</p>
 
 <table border=1>
     <tr>
@@ -59,7 +58,7 @@
         <th>&nbsp;</th>
     </tr>
 
-    % for entry in c.entries:
+    % for entry in c.page.items:
     <tr class='${h.iif(entry.is_spam, "spam", "")}'>
         <td>${entry.id}</td>
         <td>

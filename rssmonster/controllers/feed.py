@@ -46,15 +46,18 @@ class FeedController(BaseController):
 #        c.entries = c.feed.get_entries()
         guesser = bayes.Guesser(c.feed)
         c.entries = []
-        for e in c.feed.get_entries().order_by(model.FeedEntry.id.desc()).limit(10):
+        query = c.feed.get_entries().order_by(model.FeedEntry.id.desc())
+        for e in query: #.limit(10):
             e.is_spam=guesser.is_spam(e)
             e.score = guesser.guess(e)
-            
-            
             c.entries.append(e)
 
-        from webhelpers import pagination
-        from webhelpers.pagination import links
+        from webhelpers import paginate
+        c.page = paginate.Page(c.entries, request.params.get('page', 1))
+        
+
+#        from webhelpers import pagination
+#        from webhelpers.pagination import links
 
 #   http://bel-epa.com/pylonsdocs/thirdparty/webhelpers/paginate.html
 #        total = len(c.entries)
