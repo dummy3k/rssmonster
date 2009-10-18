@@ -16,6 +16,7 @@ class Guesser():
         from reverend.thomas import Bayes
         
         self.filename = config['bayes_dir']
+#        self.filename += "/users/" + c.user.id
         if not os.path.exists(self.filename):
             os.makedirs(self.filename)
         self.filename += '/feed_%s.bayes' % feed.id
@@ -54,13 +55,10 @@ class Guesser():
 
 class BayesController(BaseController):
 
-    def index(self):
-        # Return a rendered template
-        #return render('/bayes.mako')
-        # or, return a response
-        return h.dump(response)
-
     def mark_as_spam(self, id):
+        if not c.user:
+            return redirect_to(controller='login', action='signin', id=None)
+            
         entry = meta.find(model.FeedEntry, id) 
         feed = meta.find(model.Feed, entry.feed_id)
 
@@ -68,6 +66,16 @@ class BayesController(BaseController):
         guesser.trainer.train('spam', entry.title, entry.id)
         guesser.trainer.untrain('ham', entry.title, entry.id)
         guesser.save()
+        
+        h.flash("c.user.id: %s" % c.user.id)
+                
+        classy = model.Classification()
+        classy.user_id = c.user.id
+        classy.entry_id = id
+        classy.pool = 'spam'
+        meta.Session.save(classy)
+        meta.Session.commit()
+        
         
         h.flash("i understand that you don't like: %s" % entry.title)
         return redirect_to(controller='feed', action='show_feed', id=entry.feed_id)

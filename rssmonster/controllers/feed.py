@@ -15,12 +15,6 @@ log = logging.getLogger(__name__)
 
 class FeedController(BaseController):
 
-    def index(self):
-        # Return a rendered template
-        #return render('/feed.mako')
-        # or, return a response
-        return 'Hello World'
-        
     def add(self):
         if not request.params.get('url'):
             return render('feed/add.mako')

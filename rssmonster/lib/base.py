@@ -6,7 +6,7 @@ from pylons.controllers import WSGIController
 from pylons.templating import render_mako as render
 from pylons import session, tmpl_context as c
 
-from rssmonster.model import meta
+from rssmonster.model import meta, user
 
 import logging
 log = logging.getLogger(__name__)
@@ -29,9 +29,25 @@ class BaseController(WSGIController):
         self.__do_stuff__()
         
     def __do_stuff__(self):
-        if 'user' in session:
+        if 'openid' in session:
+            c.user = meta.Session.query(user.User).filter_by(openid = session['openid']).first()
+        else:
+            c.user = None
+        return
+
+        c.user = None
+        log.debug("session: %s" % session)
+        log.debug("c.user.id: %s" % session['openid'])
+        log.debug("dir(session): %s" % dir(session))
+
+        if 'user' in session and session['user']:
             c.user = session['user']
             log.debug("Yeah!")
+            log.debug("c.user.id: %s" % session['user'])
+        else:
+            c.user = 'not logged in'
+
+        log.debug("c.user.id: %s" % 'c.user')
 
 #        try:
 #            c.user = session['user']
