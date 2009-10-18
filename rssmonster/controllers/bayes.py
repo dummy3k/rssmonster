@@ -66,7 +66,6 @@ class BayesController(BaseController):
 
         guesser = Guesser(feed)
         guesser.trainer.train('spam', entry.title, entry.id)
-        guesser.trainer.untrain('ham', entry.title, entry.id)
         guesser.save()
         
         h.flash("i understand that you don't like: %s" % entry.title)
@@ -78,7 +77,6 @@ class BayesController(BaseController):
 
         guesser = Guesser(feed)
         guesser.trainer.train('ham', entry.title, entry.id)
-        guesser.trainer.untrain('spam', entry.title, entry.id)
         guesser.save()
         
         h.flash("you really seem to like: %s" % entry.title)
@@ -113,15 +111,4 @@ class BayesController(BaseController):
                         'text':'Feed Details'}]
         return render('bayes/guesser.mako')
     
-    def untrain(self, id):
-        c.entry = meta.find(model.FeedEntry, id) 
-        c.feed = meta.find(model.Feed, c.entry.feed_id)
-        guesser = Guesser(c.feed)
-
-        guesser.trainer.untrain('spam', c.entry.title, c.entry.id)
-        guesser.save()
-        h.flash("untrained: %s" % c.entry.title)
-
-        return redirect_to(action='show_guesser', id=c.entry.feed_id)
-            
         
