@@ -132,14 +132,27 @@ class BayesController(BaseController):
         guesser = Guesser(feed, c.user)
         guess = guesser.guess(c.entry)
 
-#        guesser.trainer.train('spam', c.entry.title)
-#        guess = guesser.trainer.guess(u'completed')
         log.debug("guess: %s" % guess)
         log.debug("c.entry.title: %s" % c.entry.title)
         
         c.score = str(guess)
         c.pool = guesser.trainer.poolData('spam')
         c.is_spam = guesser.is_spam(c.entry)
+
+        import operator
+        c.pool_data_spam = guesser.trainer.poolData('spam')
+        c.pool_data_spam.sort(key=operator.itemgetter(1))
+        c.pool_data_spam.reverse()
+
+        c.pool_data_ham = guesser.trainer.poolData('ham')
+        c.pool_data_ham.sort(key=operator.itemgetter(1))
+        c.pool_data_ham.reverse()
+        
+        c.tokens = set(guesser.trainer.getTokens(c.entry.title))
+        
+        c.actions = [{'link':h.url_for(controller='feed', action='show_feed', id=id),
+                        'text':'Feed Details'}]
+
         return render('bayes/score.mako')
         
     def show_guesser(self, id):
