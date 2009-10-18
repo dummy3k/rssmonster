@@ -33,6 +33,20 @@ class Guesser():
         self.trainer.save(self.filename)
 
     def is_spam(self, entry):
+        if not c.user:
+            return redirect_to(controller='login', action='signin', id=None, return_to=h.url_for())
+            
+        classy = meta.Session\
+                .query(model.Classification)\
+                .filter_by(user_id = c.user.id, entry_id=entry.id).first()
+        if classy:
+            if classy.pool == 'spam':
+                return True
+            elif classy.pool == 'ham':
+                return False
+            else:
+                raise "bad pool"
+                                
         g = self.guess(entry)
 
         if g['spam'] and not g['ham']:
@@ -56,49 +70,75 @@ class Guesser():
 class BayesController(BaseController):
 
     def mark_as_spam(self, id):
+        return self.__mark_as__(id, 'spam')
+        
+    def mark_as_ham(self, id):
+        return self.__mark_as__(id, 'ham')
+
+    def __mark_as__(self, id, pool):
         if not c.user:
-            return redirect_to(controller='login', action='signin', id=None)
+            return redirect_to(controller='login', action='signin', id=None, return_to=h.url_for())
             
         entry = meta.find(model.FeedEntry, id) 
         feed = meta.find(model.Feed, entry.feed_id)
 
-        guesser = Guesser(feed)
-        guesser.trainer.train('spam', entry.title, entry.id)
-        guesser.trainer.untrain('ham', entry.title, entry.id)
-        guesser.save()
+        classy = meta.Session\
+                .query(model.Classification)\
+                .filter_by(user_id = c.user.id, entry_id=entry.id).first()
 
-        classy = model.Classification()
-        classy.user_id = c.user.id
-        classy.entry_id = id
-        classy.pool = 'spam'
-        meta.Session.save(classy)
+        if not classy:
+            classy = model.Classification()
+            classy.user_id = c.user.id
+            classy.entry_id = id
+            classy.pool = pool
+            meta.Session.save(classy)
+            
+            untrain_id = None
+        else:
+            if classy.pool == pool:
+                h.flash("entry was already classified")
+                #return redirect_to(controller='feed', action='show_feed', id=entry.feed_id)
+            
+            classy.pool = pool
+            meta.Session.update(classy)
+
+            untrain_id = entry.id
+            
         meta.Session.commit()
-        
-        
-        h.flash("i understand that you don't like: %s" % entry.title)
-        return redirect_to(controller='feed', action='show_feed', id=entry.feed_id)
-
-    def mark_as_ham(self, id):
-        entry = meta.find(model.FeedEntry, id) 
-        feed = meta.find(model.Feed, entry.feed_id)
 
         guesser = Guesser(feed)
-        guesser.trainer.train('ham', entry.title, entry.id)
-        guesser.trainer.untrain('spam', entry.title, entry.id)
+        guesser.trainer.train(pool, entry.title) #, entry.id
+        
+        if pool == 'spam':
+            other_pool = 'ham'
+        elif pool == 'ham':
+            other_pool = 'spam'
+        else:
+            raise "bad pool"
+            
+        guesser.trainer.untrain(other_pool, entry.title) #, untrain_id
         guesser.save()
+
         
-        h.flash("you really seem to like: %s" % entry.title)
+        
+        h.flash("now known as %s: %s" % (pool, entry.title))
         return redirect_to(controller='feed', action='show_feed', id=entry.feed_id)
-        
+
     def show_score(self, id):
         c.entry = meta.find(model.FeedEntry, id) 
         
         feed = meta.find(model.Feed, c.entry.feed_id)
         guesser = Guesser(feed)
-        guess = guesser.trainer.guess(c.entry.title)
+        guess = guesser.guess(c.entry)
+
+#        guesser.trainer.train('spam', c.entry.title)
+#        guess = guesser.trainer.guess(u'completed')
         log.debug("guess: %s" % guess)
+        log.debug("c.entry.title: %s" % c.entry.title)
         
         c.score = str(guess)
+        c.pool = guesser.trainer.poolData('spam')
+        c.is_spam = guesser.is_spam(c.entry)
         return render('bayes/score.mako')
         
     def show_guesser(self, id):
@@ -119,17 +159,6 @@ class BayesController(BaseController):
                         'text':'Feed Details'}]
         return render('bayes/guesser.mako')
     
-    def untrain(self, id):
-        c.entry = meta.find(model.FeedEntry, id) 
-        c.feed = meta.find(model.Feed, c.entry.feed_id)
-        guesser = Guesser(c.feed)
-
-        guesser.trainer.untrain('spam', c.entry.title, c.entry.id)
-        guesser.save()
-        h.flash("untrained: %s" % c.entry.title)
-
-        return redirect_to(action='show_guesser', id=c.entry.feed_id)
-            
     def mixed_rss(self, id):
         #from webhelpers.feedgenerator import Atom1Feed, Rss201rev2Feed
         

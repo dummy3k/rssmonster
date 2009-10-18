@@ -8,11 +8,15 @@
 <table>
     <tr>
         <th>Spam Score</th>
-        <td>${c.entry.spam_score}&nbsp;</td>
+        <td>${c.score}&nbsp;</td>
+    </tr>
+    <tr>
+        <th>Is_spam</th>
+        <td>${c.is_spam}&nbsp;</td>
     </tr>
     <tr>
         <th>Ham Score</th>
-        <td>&nbsp;</td>
+        <td>${c.pool}&nbsp;</td>
     </tr>
 
 </%def>
