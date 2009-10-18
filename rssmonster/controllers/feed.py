@@ -13,14 +13,6 @@ import bayes
 
 log = logging.getLogger(__name__)
 
-def __find__(m, id):
-    query = meta.Session.query(m)
-    feed = query.filter(m.id == id).first()
-    if not feed: 
-        abort(404)
-
-    return feed    
-
 class FeedController(BaseController):
 
     def index(self):
@@ -47,7 +39,7 @@ class FeedController(BaseController):
         return render('feed/list.mako')
         
     def show_feed(self, id):
-        c.feed = __find__(model.Feed, id)
+        c.feed = meta.find(model.Feed, id)
 
 #        query = meta.Session.query(model.FeedEntry)
 #        c.entries = query.filter(model.FeedEntry.feed_id == id)
@@ -79,7 +71,7 @@ class FeedController(BaseController):
     def update(self, id):
         import feedparser
 
-        feed = __find__(model.Feed, id)
+        feed = meta.find(model.Feed, id)
         rss_reed = feedparser.parse(feed.url)
  #       return __dump__(rss_reed.feed)
 
@@ -107,7 +99,8 @@ class FeedController(BaseController):
             feed_entry.feed_id = id
             feed_entry.uid = entry['id']
             feed_entry.title = entry['title']
-            feed_entry.summary = entry['summary']
+            if 'summary' in entry:
+                feed_entry.summary = entry['summary']
             feed_entry.link = entry['link']
             
             if is_new:
@@ -119,10 +112,10 @@ class FeedController(BaseController):
 
         meta.Session.commit()
         h.flash("added %s entries" % cnt_added)
-        return redirect_to(action='show_feed', Id=id)
+        return redirect_to(action='show_feed', id=id)
         
     def pipe(self, id):
-        feed_data = __find__(model.Feed, id)
+        feed_data = meta.find(model.Feed, id)
         feed = Atom1Feed(
             title=feed_data.title,
             link=feed_data.link,
@@ -137,4 +130,4 @@ class FeedController(BaseController):
 
         response.content_type = 'application/atom+xml'
         return feed.writeString('utf-8')
-                
+

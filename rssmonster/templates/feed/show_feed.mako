@@ -42,7 +42,8 @@
     </tr>
 </table>
 
-<a href='${h.url_for(action='update', id=c.feed.id)}'>${_('update')}</a>&nbsp;
+<a href='${h.url_for(action='update', id=c.feed.id)}'>${_('Update')}</a>&nbsp;
+<a href='${h.url_for(controller='bayes', action='show_guesser', id=c.feed.id)}'>${_('Guesser Details')}</a>&nbsp;
 
 <h1>Lastest Entries</h1>
 
@@ -53,7 +54,7 @@
     <tr>
         <th>${_('id')}</th>
         <th>${_('title')}</th>
-        <th>${_('uid')}</th>
+        <th>&nbsp;</th>
     </tr>
 
     % for entry in c.entries:
@@ -64,7 +65,10 @@
             <p>${h.markdown(entry.summary, safe_mode="remove")}</p>
             ${entry.is_spam}
         </td>
-        <td>${entry.uid}</td>
+        <td>
+            <a href='${h.url_for(controller='bayes', action='mark_as_spam', id=entry.id)}'>${_('Spam')}</a>&nbsp;
+            <a href='${h.url_for(controller='bayes', action='show_score', id=c.feed.id)}'>${_('Score')}</a>&nbsp;
+        </td>
     </tr>
     %endfor
 

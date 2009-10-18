@@ -8,7 +8,7 @@ from helper import *
 log = logging.getLogger('bayesRSS.' + __name__)
 
 class feedConverter:
-    def __init__(self, url, settings, templateGroup):
+    def __init__(self, url, templateGroup):
         self.sourceFeed = feedparser.parse(url)
         self.templateGroup = templateGroup
 
