@@ -16,23 +16,13 @@ def __relevant__(entry):
     else:
         return entry.title
 
-def myTokenizer():
-    def tokenize(self, msg):
-        retVal = []
-        for token in msg.split():
-            if len(token) < 10:
-                continue
-            
-            token = token.lower()
-            stopWords = ['is', 'the', 'for', 'of', 'to']
-            if token in stopWords:
-                continue
-
-        return retVal
-
 def my_tokenize(msg):
     retVal = []
+    log.debug("msg: %s" % msg)
+    msg = h.markdown(msg, safe_mode="remove")
+    log.debug("!!!!!msg: %s" % msg)
     for token in msg.split():
+        log.debug("token: %s" % token)
         if len(token) < 4:
             continue
         
@@ -60,7 +50,7 @@ class Guesser():
         self.filename += '/feed_%s.bayes' % str(feed.id)
         log.debug("filename:%s" % self.filename)
 
-        self.trainer = Bayes(tokenizer=myTokenizer())
+        self.trainer = Bayes()
         self.trainer.getTokens = my_tokenize
         if os.path.exists(self.filename):
             self.trainer.load(self.filename)
@@ -72,7 +62,7 @@ class Guesser():
         self.trainer.save(self.filename)
 
     def clear(self):
-        self.trainer = Bayes(tokenizer=myTokenizer())
+        self.trainer = Bayes()
         self.trainer.getTokens = my_tokenize
         self.trainer.newPool('ham')
         self.trainer.newPool('spam')
@@ -272,7 +262,7 @@ class BayesController(BaseController):
 
         cnt = 0
         for entry in query:
-            h.flash("%s :%s" % (entry.pool, __relevant__(entry.entry)))
+#            h.flash("%s :%s" % (entry.pool, __relevant__(entry.entry)))
             guesser.trainer.train('spam', __relevant__(entry.entry))
             cnt+=1
 

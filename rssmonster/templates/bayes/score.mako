@@ -20,10 +20,10 @@
 
 <h2>tokens</h2>
 % for word in c.tokens:
-${word}, 
+${word | h}, 
+ddd
 % endfor
 
-${c.tokens}
 
 <h2>Spam words</h2>
 % for word, cnt in c.pool_data_spam:
