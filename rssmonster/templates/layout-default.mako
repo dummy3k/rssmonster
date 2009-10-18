@@ -29,7 +29,11 @@
         % endfor
         <a href="${h.url_for(controller='feed', action='add', id=None)}">Add Feed</a> |
         <a href="${h.url_for(controller='feed', action='show_list', id=None)}">List Feeds</a> |
+        %if c.user:
         <a href="${h.url_for(controller='login', action='signout', id=None)}">Logout</a>
+        % else:
+        <a href="${h.url_for(controller='login', action='signin', id=None)}">Login</a>
+        % endif
     </div>
     <% flashes = h.flash.pop_messages() %>
     % if flashes:
