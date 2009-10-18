@@ -65,10 +65,21 @@ class BayesController(BaseController):
         feed = meta.find(model.Feed, entry.feed_id)
 
         guesser = Guesser(feed)
-        guesser.trainer.train('spam', entry.title)
+        guesser.trainer.train('spam', entry.title, entry.id)
         guesser.save()
         
         h.flash("i understand that you don't like: %s" % entry.title)
+        return redirect_to(controller='feed', action='show_feed', id=entry.feed_id)
+        
+    def mark_as_ham(self, id):
+        entry = meta.find(model.FeedEntry, id) 
+        feed = meta.find(model.Feed, entry.feed_id)
+
+        guesser = Guesser(feed)
+        guesser.trainer.train('ham', entry.title, entry.id)
+        guesser.save()
+        
+        h.flash("you really seem to like: %s" % entry.title)
         return redirect_to(controller='feed', action='show_feed', id=entry.feed_id)
         
     def show_score(self, id):
@@ -79,7 +90,7 @@ class BayesController(BaseController):
         guess = guesser.trainer.guess(c.entry.title)
         log.debug("guess: %s" % guess)
         
-        c.entry.spam_score = str(guess)
+        c.score = str(guess)
         return render('bayes/score.mako')
         
     def show_guesser(self, id):
@@ -88,9 +99,13 @@ class BayesController(BaseController):
         c.feed = meta.find(model.Feed, id)
 
         guesser = Guesser(c.feed)
-        c.pool_data = guesser.trainer.poolData('spam')
-        c.pool_data.sort(key=operator.itemgetter(1))
-        c.pool_data.reverse()
+        c.pool_data_spam = guesser.trainer.poolData('spam')
+        c.pool_data_spam.sort(key=operator.itemgetter(1))
+        c.pool_data_spam.reverse()
+
+        c.pool_data_ham = guesser.trainer.poolData('ham')
+        c.pool_data_ham.sort(key=operator.itemgetter(1))
+        c.pool_data_ham.reverse()
         
         c.actions = [{'link':h.url_for(controller='feed', action='show_feed', id=id),
                         'text':'Feed Details'}]

@@ -8,7 +8,12 @@
 ##${str(c.pool_data)}
 
 <h2>Spam words</h2>
-% for word, cnt in c.pool_data:
+% for word, cnt in c.pool_data_spam:
+${word} (${cnt}), 
+% endfor
+
+<h2>Ham words</h2>
+% for word, cnt in c.pool_data_ham:
 ${word} (${cnt}), 
 % endfor
 
