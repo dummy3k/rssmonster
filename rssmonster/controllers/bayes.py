@@ -16,7 +16,35 @@ def __relevant__(entry):
     else:
         return entry.title
 
-#def 
+def myTokenizer():
+    def tokenize(self, msg):
+        retVal = []
+        for token in msg.split():
+            if len(token) < 10:
+                continue
+            
+            token = token.lower()
+            stopWords = ['is', 'the', 'for', 'of', 'to']
+            if token in stopWords:
+                continue
+
+        return retVal
+
+def my_tokenize(msg):
+    retVal = []
+    for token in msg.split():
+        if len(token) < 4:
+            continue
+        
+        token = token.lower()
+        stopWords = ['is', 'the', 'for', 'of', 'to']
+        if token in stopWords:
+            continue
+
+        retVal.append(token)
+        
+    return retVal
+
 from reverend.thomas import Bayes
     
 class Guesser():
@@ -32,7 +60,8 @@ class Guesser():
         self.filename += '/feed_%s.bayes' % str(feed.id)
         log.debug("filename:%s" % self.filename)
 
-        self.trainer = Bayes()
+        self.trainer = Bayes(tokenizer=myTokenizer())
+        self.trainer.getTokens = my_tokenize
         if os.path.exists(self.filename):
             self.trainer.load(self.filename)
         else:
@@ -43,7 +72,8 @@ class Guesser():
         self.trainer.save(self.filename)
 
     def clear(self):
-        self.trainer = Bayes()
+        self.trainer = Bayes(tokenizer=myTokenizer())
+        self.trainer.getTokens = my_tokenize
         self.trainer.newPool('ham')
         self.trainer.newPool('spam')
     
@@ -242,10 +272,11 @@ class BayesController(BaseController):
 
         cnt = 0
         for entry in query:
-            h.flash(" :%s" % __relevant__(entry.entry))
-            guesser.trainer.train(entry.pool, __relevant__(entry.entry))
+            h.flash("%s :%s" % (entry.pool, __relevant__(entry.entry)))
+            guesser.trainer.train('spam', __relevant__(entry.entry))
             cnt+=1
 
+        guesser.save()
         h.flash("learned %s entries" % cnt)
         return h.go_back()
     
