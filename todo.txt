@@ -1,0 +1,1 @@
+- beim pager nur die sichtbaren Zeilen auf spam untersuchen
