@@ -106,6 +106,7 @@ class BayesController(BaseController):
         
         c.actions = [{'link':h.url_for(controller='feed', action='show_feed', id=feed.id),
                         'text':'Feed Details'}]
+                        
         return render('bayes/score.mako')
         
     def show_guesser(self, id):
