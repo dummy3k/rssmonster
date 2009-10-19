@@ -1,2 +1,8 @@
 - beim pager nur die sichtbaren Zeilen auf spam untersuchen
 - feeds auch aktualisieren, wenn google grad nicht guckt, alle elemente seit dem letzten abruf zurück geben
+
+User Profile
+- die letzten 10 entries die als spam gefiltert wurden
+- tätigkeiten
+    - feed abruf mit user agent und datum
+    - feed abonniert
