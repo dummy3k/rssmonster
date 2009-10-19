@@ -16,17 +16,13 @@
     </tr>
 </table>
 
+Feed:
 <a href='${h.url_for(controller='bayes', action='redo', id=c.feed.id, return_to=h.url_for())}'>${_('ReDo')}</a>&nbsp;
 
-% if c.is_spam:
-<a href='${c.base_url}${h.url_for(controller='bayes', 
-                                  action='mark_as_ham', 
-                                  id=c.entry.id, return_to=h.url_for())}'>${_('No Spam')}</a>&nbsp;
-% else:
-<a href='${c.base_url}${h.url_for(controller='bayes',
-                                  action='mark_as_spam', 
-                                  id=c.entry.id, return_to=h.url_for())}'>${_('Spam')}</a>&nbsp;
-% endif
+Entry:
+% for x in c.entry.actions(h.url_for()):
+<a href="${x['link']}">${x['title']}</a>&nbsp;
+% endfor
 
 <h2>tokens</h2>
 % for word in c.tokens:

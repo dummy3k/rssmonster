@@ -8,6 +8,7 @@ import rssmonster.lib.helpers as h
 from rssmonster.lib.guesser import Guesser
 from rssmonster.model import meta
 import rssmonster.model as model
+from pylons.controllers.util import redirect
 
 log = logging.getLogger(__name__)
 
@@ -47,7 +48,8 @@ class BayesController(BaseController):
             untrain_id = None
         else:
             if classy.pool == pool:
-                h.flash("entry was already classified")
+                h.flash("entry was already classified as %s" % pool)
+                return h.go_back(h.url_for(controller='feed', action='show_feed', id=entry.feed_id))
                 #return redirect_to(controller='feed', action='show_feed', id=entry.feed_id)
             
             classy.pool = pool
@@ -58,7 +60,7 @@ class BayesController(BaseController):
         meta.Session.commit()
 
         guesser = Guesser(feed, c.user)
-        guesser.trainer.train(pool, __relevant__(entry)) #, entry.id
+        guesser.trainer.train(pool, __relevant__(entry), entry.id)
         
         if pool == 'spam':
             other_pool = 'ham'
@@ -67,7 +69,7 @@ class BayesController(BaseController):
         else:
             raise "bad pool"
             
-        guesser.trainer.untrain(other_pool, __relevant__(entry)) #, untrain_id
+        guesser.trainer.untrain(other_pool, __relevant__(entry), untrain_id)
         guesser.save()
 
         h.flash("now known as %s: %s" % (pool, entry.id))
@@ -147,7 +149,7 @@ class BayesController(BaseController):
         log.debug('c.base_url: %s' % c.base_url)
 
         guesser = Guesser(feed_data, user)
-        for entry in feed_data.get_entries():
+        for entry in feed_data.get_entries().limit(30):
             c.entry = entry
             c.entry.is_spam=guesser.is_spam(entry)
             if c.entry.is_spam:

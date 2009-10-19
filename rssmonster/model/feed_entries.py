@@ -3,6 +3,9 @@ import meta
 import hashlib
 from datetime import datetime
 
+import logging
+log = logging.getLogger(__name__)
+
 feed_entries_table = Table('feed_entries', meta.metadata,
     Column('id', Integer, primary_key=True),
     Column('feed_id', Integer, ForeignKey('feeds.id')),
@@ -13,6 +16,9 @@ feed_entries_table = Table('feed_entries', meta.metadata,
 )
 
 class FeedEntry(object):
+    def __init__(self):
+        log.debug("Hellllllo!")
+        
     def __unicode__(self):
         return self.name
 
@@ -28,4 +34,14 @@ class FeedEntry(object):
         return "<User()>"
         #return "<User('%s', '%s')>" % (self.name, self.openid)
 
-
+    def actions(self, return_to):
+        import rssmonster.lib.helpers as h
+        return [
+                {'link':h.url_for(controller='bayes', action='show_score', id=self.id, return_to=return_to),
+                 'title':'Score'},
+                {'link':h.url_for(controller='bayes', action='mark_as_spam', id=self.id, return_to=return_to),
+                 'title':'Spam'},
+                {'link':h.url_for(controller='bayes', action='mark_as_ham', id=self.id, return_to=return_to),
+                 'title':'Ham'}
+                 ]
+        
