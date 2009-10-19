@@ -49,7 +49,6 @@
 <h1>Lastest Entries</h1>
 
 <p>${c.page.pager()}</p>
-
 <table border=1>
     <tr>
         <th>${_('id')}</th>
@@ -69,17 +68,16 @@
         <td>${entry.score['spam']}</td>
         <td>${entry.score['ham']}</td>
         <td>
-            % if entry.is_spam:
-            <a href='${h.url_for(controller='bayes', action='mark_as_ham', id=entry.id)}'>${_('No Spam')}</a>&nbsp;
-            % else:
-            <a href='${h.url_for(controller='bayes', action='mark_as_spam', id=entry.id)}'>${_('Spam')}</a>&nbsp;
-            % endif
-            <a href='${h.url_for(controller='bayes', action='untrain', id=entry.id)}'>${_('Untrain')}</a>&nbsp;
-            <a href='${h.url_for(controller='bayes', action='show_score', id=entry.id)}'>${_('Score')}</a>&nbsp;
+            % for x in entry.actions(h.url_for(), c.user):
+            <a href="${x['link']}">${x['title']}</a>&nbsp;
+            % endfor
         </td>
     </tr>
     %endfor
 
 </table>
+<p>${c.page.pager()}</p>
+
+
 </%def>
 

@@ -76,6 +76,10 @@ def strip_ml_tags(in_text):
 	>>> strip_ml_tags(test_text)
 	'Keep this Text  KEEP  123'
 	"""
+
+	if not in_text:
+		return None
+
 	# convert in_text to a mutable object (e.g. list)
 	s_list = list(in_text)
 	i,j = 0,0
