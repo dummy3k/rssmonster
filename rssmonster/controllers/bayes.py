@@ -157,7 +157,8 @@ class BayesController(BaseController):
         guesser.save()
 
         h.flash("now known as %s: %s" % (pool, entry.id))
-        return redirect_to(controller='feed', action='show_feed', id=entry.feed_id)
+        #return redirect_to(controller='feed', action='show_feed', id=entry.feed_id)
+        return h.go_back(h.url_for(controller='feed', action='show_feed', id=entry.feed_id))
 
     def show_score(self, id):
         if not c.user:

@@ -54,14 +54,13 @@ def iif(expr, a, b):
         return b
 
 
-def go_back():
+def go_back(default = '/'):
     """ return to the original source """
     from pylons import request
     from pylons.controllers.util import redirect
 
     if request.params.get('return_to'):
         return redirect(request.params.get('return_to'))
-    else:
-        flash('no where to go')
-        return redirect('/')
+
+    return redirect(default)
 
