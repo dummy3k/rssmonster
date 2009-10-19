@@ -74,7 +74,7 @@ class FeedController(BaseController):
         c.feeds = query.all()
         return render('feed/list.mako')
         
-    def show_feed(self, id):
+    def show_feed(self, id, page=1):
         if not c.user:
             return redirect_to(controller='login', action='signin', id=None, return_to=h.url_for())
 
@@ -92,7 +92,7 @@ class FeedController(BaseController):
             c.entries.append(e)
 
         from webhelpers import paginate
-        c.page = paginate.Page(c.entries, request.params.get('page', 1))
+        c.page = paginate.Page(c.entries, page)
         
 
 #        from webhelpers import pagination

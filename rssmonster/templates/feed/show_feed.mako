@@ -48,6 +48,8 @@
 
 <h1>Lastest Entries</h1>
 
+<p>${h.url_for(page=None)}</p>
+
 <p>${c.page.pager()}</p>
 <table border=1>
     <tr>
