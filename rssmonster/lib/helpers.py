@@ -8,7 +8,7 @@ from webhelpers.html.tags import *
 from webhelpers.html.secure_form import secure_form
 from webhelpers.pylonslib import Flash as _Flash
 from routes import url_for
-from webhelpers.html.converters import markdown
+#from webhelpers.html.converters import markdown
 
 #http://pylonshq.com/docs/en/0.9.7/thirdparty/webhelpers/feedgenerator/
 # Atom1Feed:
@@ -63,4 +63,36 @@ def go_back(default = '/'):
         return redirect(request.params.get('return_to'))
 
     return redirect(default)
+
+# taken from http://code.activestate.com/recipes/440481/
+def strip_ml_tags(in_text):
+	"""Description: Removes all HTML/XML-like tags from the input text.
+	Inputs: s --> string of text
+	Outputs: text string without the tags
+	
+	# doctest unit testing framework
+
+	>>> test_text = "Keep this Text <remove><me /> KEEP </remove> 123"
+	>>> strip_ml_tags(test_text)
+	'Keep this Text  KEEP  123'
+	"""
+	# convert in_text to a mutable object (e.g. list)
+	s_list = list(in_text)
+	i,j = 0,0
+	
+	while i < len(s_list):
+		# iterate until a left-angle bracket is found
+		if s_list[i] == '<':
+			while s_list[i] != '>':
+				# pop everything from the the left-angle bracket until the right-angle bracket
+				s_list.pop(i)
+				
+			# pops the right-angle bracket, too
+			s_list.pop(i)
+		else:
+			i=i+1
+			
+	# convert the list back into text
+	join_char=''
+	return join_char.join(s_list)
 

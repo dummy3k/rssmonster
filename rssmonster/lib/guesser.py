@@ -10,7 +10,7 @@ log = logging.getLogger(__name__)
 def my_tokenize(msg):
     retVal = []
     log.debug("msg: %s" % msg)
-    msg = h.markdown(msg, safe_mode="remove")
+    msg = h.strip_ml_tags(msg)
     log.debug("!!!!!msg: %s" % msg)
     for token in msg.split():
         log.debug("token: %s" % token)
