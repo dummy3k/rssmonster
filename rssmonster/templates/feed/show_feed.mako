@@ -62,7 +62,7 @@
 
     % for entry in c.page.items:
     <tr class='${h.iif(entry.is_spam, "spam", "")}'>
-        <td>${entry.id}</td>
+        <td><a name="${entry.id}" id="${entry.id}">${entry.id}</a></td>
         <td>
             <a href='${entry.link}' class='${h.iif(entry.is_spam, "spam", "")}'>${entry.title}</a>
             <p>${h.strip_ml_tags(entry.summary)}</p>
@@ -70,7 +70,7 @@
         <td>${entry.score['spam']}</td>
         <td>${entry.score['ham']}</td>
         <td>
-            % for x in entry.actions(h.url_for(), c.user):
+            % for x in entry.actions(h.url_for() + '#' + str(entry.id), c.user):
             <a href="${x['link']}">${x['title']}</a>&nbsp;
             % endfor
         </td>
