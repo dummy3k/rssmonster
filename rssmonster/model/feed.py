@@ -34,4 +34,19 @@ class Feed(object):
     def get_entries(self):
         query = meta.Session.query(FeedEntry)
         return query.filter(FeedEntry.feed_id == self.id)
-    
+
+    def actions(self, return_to, user):
+        import rssmonster.lib.helpers as h
+        
+        ret = [
+                {'link':h.url_for(controller='/feed', action='show_feed', id=self.id),
+                 'title':'Details'},
+                {'link':h.url_for(controller='/feed', action='update', id=self.id, return_to=return_to),
+                 'title':'Update'},
+                {'link':h.url_for(controller='/bayes', action='show_guesser', id=self.id),
+                 'title':'Guesser'},
+                {'link':h.url_for(controller='/bayes', action='redo', id=self.id, return_to=return_to),
+                 'title':'Redo'}
+                ]
+
+        return ret    

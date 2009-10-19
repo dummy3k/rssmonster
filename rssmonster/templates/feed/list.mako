@@ -31,12 +31,9 @@
         <td>${feed.updated}</td>
         <td>${feed.language}</td>
         <td>
-            <a href='${h.url_for(action='show_feed', id=feed.id)}'>${_('Show')}</a>&nbsp;
-            <a href='${h.url_for(action='update', id=feed.id, return_to=h.url_for())}'>${_('Fetch')}</a>&nbsp;
-            <a href='${h.url_for(controller='bayes', 
-                action='redo', id=feed.id, return_to=h.url_for(controller='bayes', action='show_score', id=feed.id))}'>${_('ReDo')}</a>&nbsp;
-##            <a href='${h.url_for(action='rss', id=feed.id)}'>${_('Rss')}</a>&nbsp;
-##            <a href='${h.url_for(action='delete')}'>${_('Delete')}</a>
+            % for x in feed.actions(h.url_for(), c.user):
+            <a href="${x['link']}">${x['title']}</a>&nbsp;
+            % endfor
        </td>
     </tr>
     %endfor
