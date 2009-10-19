@@ -1,4 +1,5 @@
 import logging
+import re
 from pylons import config
 from reverend.thomas import Bayes
 from rssmonster.model import meta
@@ -18,6 +19,10 @@ def my_tokenize(msg):
             continue
         
         token = token.lower()
+        token = re.sub('^[^\w]*', '', token)
+        token = re.sub('[^\w]*$', '', token)
+        
+        
         stopWords = ['is', 'the', 'for', 'of', 'to']
         if token in stopWords:
             continue

@@ -1,5 +1,5 @@
 from rssmonster.tests import *
-from rssmonster.lib.guesser import Guesser
+from rssmonster.lib.guesser import Guesser, my_tokenize
 from mock import Mock 
 
 import logging
@@ -22,4 +22,10 @@ class TestGuesser(TestController):
         self.assertEqual(10, 10)
 
     def test_tokenize(self):
+        input = "Augenblick: Leichtigkeit@ des Seins"
+        ret = my_tokenize(input)
+        self.assertTrue('leichtigkeit' in ret)
+        self.assertFalse('des' in ret) # less then 4 chars
+        self.assertTrue('seins' in ret)
+#        self.assertTrue('augenblick' in ret)
         pass
