@@ -8,7 +8,8 @@ import rssmonster.lib.helpers as h
 
 from openid.consumer.consumer import Consumer, SUCCESS, FAILURE, DiscoveryFailure
 from openid.store.sqlstore import SQLiteStore, MySQLStore 
-from openid import sreg
+#from openid import sreg
+from openid.extensions import sreg
 from datetime import datetime
 from pylons.i18n import get_lang, set_lang
 from pylons.decorators import rest
