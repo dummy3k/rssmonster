@@ -12,6 +12,7 @@ def my_tokenize(msg):
     retVal = []
     log.debug("msg: %s" % msg)
     msg = h.strip_ml_tags(msg)
+    msg = re.sub('[^\w]', ' ', msg)
     log.debug("!!!!!msg: %s" % msg)
     for token in msg.split():
         log.debug("token: %s" % token)
@@ -19,8 +20,8 @@ def my_tokenize(msg):
             continue
         
         token = token.lower()
-        token = re.sub('^[^\w]*', '', token)
-        token = re.sub('[^\w]*$', '', token)
+#        token = re.sub('^[^\w]*', '', token)
+#        token = re.sub('[^\w]*$', '', token)
         
         
         stopWords = ['is', 'the', 'for', 'of', 'to']

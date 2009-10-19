@@ -17,7 +17,10 @@
 </table>
 
 Feed:
-<a href='${h.url_for(controller='bayes', action='redo', id=c.feed.id, return_to=h.url_for())}'>${_('ReDo')}</a>&nbsp;
+##<a href='${h.url_for(controller='bayes', action='redo', id=c.feed.id, return_to=h.url_for())}'>${_('ReDo')}</a>&nbsp;
+% for x in c.feed.actions(h.url_for(), c.user):
+<a href="${x['link']}">${x['title']}</a>&nbsp;
+% endfor
 
 Entry:
 % for x in c.entry.actions(h.url_for(), c.user):
