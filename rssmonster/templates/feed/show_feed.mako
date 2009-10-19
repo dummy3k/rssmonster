@@ -68,7 +68,7 @@
         <td>${entry.score['spam']}</td>
         <td>${entry.score['ham']}</td>
         <td>
-            % for x in entry.actions(h.url_for()):
+            % for x in entry.actions(h.url_for(), c.user):
             <a href="${x['link']}">${x['title']}</a>&nbsp;
             % endfor
         </td>
