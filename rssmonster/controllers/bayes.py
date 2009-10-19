@@ -22,26 +22,28 @@ def __relevant__(entry):
 class BayesController(BaseController):
 
     def mark_as_spam(self, id):
+        log.debug("FFF!")
+
         if not c.user:
             return redirect_to(controller='login', action='signin', id=None, return_to=h.url_for())
             
         entry = meta.find(model.FeedEntry, id) 
+        feed = meta.find(model.Feed, entry.feed_id)
         guesser = Guesser(feed, c.user)
-        return self.__mark_as__(id, 'spam', guesser)
+        return self.__mark_as__(entry, 'spam', guesser)
         
     def mark_as_ham(self, id):
         if not c.user:
             return redirect_to(controller='login', action='signin', id=None, return_to=h.url_for())
             
         entry = meta.find(model.FeedEntry, id) 
+        feed = meta.find(model.Feed, entry.feed_id)
         guesser = Guesser(feed, c.user)
-        return self.__mark_as__(id, 'ham', guesser)
+        return self.__mark_as__(entry, 'ham', guesser)
 
     def __mark_as__(self, entry, pool, guesser, force=False):
         """ when forced the entry is updated even if the db says it is already """
-        
-        feed = meta.find(model.Feed, entry.feed_id)
-
+        log.debug("entry.id: %s" % entry.id)
         classy = meta.Session\
                 .query(model.Classification)\
                 .filter_by(user_id = c.user.id, entry_id=entry.id).first()
@@ -49,7 +51,7 @@ class BayesController(BaseController):
         if not classy:
             classy = model.Classification()
             classy.user_id = c.user.id
-            classy.entry_id = id
+            classy.entry_id = entry.id
             classy.pool = pool
             meta.Session.save(classy)
             
