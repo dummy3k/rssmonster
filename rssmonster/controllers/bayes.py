@@ -178,7 +178,7 @@ class BayesController(BaseController):
         cnt = 0
         for entry in query:
 #            h.flash("%s :%s" % (entry.pool, __relevant__(entry.entry)))
-            guesser.trainer.train('spam', __relevant__(entry.entry))
+            guesser.trainer.train(entry.pool, __relevant__(entry.entry))
             cnt+=1
 
         guesser.save()
