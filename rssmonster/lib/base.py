@@ -29,6 +29,9 @@ class BaseController(WSGIController):
         self.__do_stuff__()
         
     def __do_stuff__(self):
+        md_log = logging.getLogger(__name__)
+        md_log.setLevel(logging.WARN)
+
         if 'openid' in session:
             c.user = meta.Session.query(user.User).filter_by(openid = session['openid']).first()
         else:

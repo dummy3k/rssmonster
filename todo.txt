@@ -1,1 +1,2 @@
 - beim pager nur die sichtbaren Zeilen auf spam untersuchen
+- wird beim aktualisieren auch wirklich die neue einträge gespeichert?
