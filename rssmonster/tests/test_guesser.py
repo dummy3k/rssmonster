@@ -9,10 +9,9 @@ class TestGuesser(TestController):
     def __init__(self, foo):
         TestController.__init__(self, foo)
         
-        log.debug("ho")
+        log.debug("--- running %s" % foo)
         
     def test(self):
-        log.debug("ho")
         user = Mock()
         user.id = 666
         
@@ -22,3 +21,5 @@ class TestGuesser(TestController):
         g = Guesser(feed, user)
         self.assertEqual(10, 10)
 
+    def test_tokenize(self):
+        pass
