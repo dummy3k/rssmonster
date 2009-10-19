@@ -22,16 +22,24 @@ def __relevant__(entry):
 class BayesController(BaseController):
 
     def mark_as_spam(self, id):
-        return self.__mark_as__(id, 'spam')
-        
-    def mark_as_ham(self, id):
-        return self.__mark_as__(id, 'ham')
-
-    def __mark_as__(self, id, pool):
         if not c.user:
             return redirect_to(controller='login', action='signin', id=None, return_to=h.url_for())
             
         entry = meta.find(model.FeedEntry, id) 
+        guesser = Guesser(feed, c.user)
+        return self.__mark_as__(id, 'spam', guesser)
+        
+    def mark_as_ham(self, id):
+        if not c.user:
+            return redirect_to(controller='login', action='signin', id=None, return_to=h.url_for())
+            
+        entry = meta.find(model.FeedEntry, id) 
+        guesser = Guesser(feed, c.user)
+        return self.__mark_as__(id, 'ham', guesser)
+
+    def __mark_as__(self, entry, pool, guesser, force=False):
+        """ when forced the entry is updated even if the db says it is already """
+        
         feed = meta.find(model.Feed, entry.feed_id)
 
         classy = meta.Session\
@@ -47,7 +55,7 @@ class BayesController(BaseController):
             
             untrain_id = None
         else:
-            if classy.pool == pool:
+            if classy.pool == pool and not force:
                 h.flash("entry was already classified as %s" % pool)
                 return h.go_back(h.url_for(controller='feed', action='show_feed', id=entry.feed_id))
                 #return redirect_to(controller='feed', action='show_feed', id=entry.feed_id)
@@ -59,7 +67,6 @@ class BayesController(BaseController):
             
         meta.Session.commit()
 
-        guesser = Guesser(feed, c.user)
         guesser.trainer.train(pool, __relevant__(entry), entry.id)
         
         if pool == 'spam':
@@ -69,12 +76,12 @@ class BayesController(BaseController):
         else:
             raise "bad pool"
             
-        guesser.trainer.untrain(other_pool, __relevant__(entry), untrain_id)
+#        guesser.trainer.untrain(other_pool, __relevant__(entry), untrain_id)
         guesser.save()
 
-        h.flash("now known as %s: %s" % (pool, entry.id))
-        #return redirect_to(controller='feed', action='show_feed', id=entry.feed_id)
-        return h.go_back(h.url_for(controller='feed', action='show_feed', id=entry.feed_id))
+        if not force:
+            h.flash("now known as %s: %s" % (pool, entry.id))
+            return h.go_back(h.url_for(controller='feed', action='show_feed', id=entry.feed_id))
 
     def show_score(self, id):
         if not c.user:
@@ -181,10 +188,13 @@ class BayesController(BaseController):
         cnt = 0
         for entry in query:
 #            h.flash("%s :%s" % (entry.pool, __relevant__(entry.entry)))
-            guesser.trainer.train(entry.pool, __relevant__(entry.entry))
+#            guesser.trainer.train(entry.pool, __relevant__(entry.entry))
+            self.__mark_as__(entry.entry, entry.pool, guesser, True)
             cnt+=1
 
         guesser.save()
+        log.debug("FOOOOOO")
+        
         h.flash("learned %s entries" % cnt)
         return h.go_back()
     
