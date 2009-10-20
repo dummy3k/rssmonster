@@ -51,21 +51,21 @@
 
 <%namespace name='entry_mako' file='entry.mako' />
 <div style="max-width:45%;float:left;" class='box'>
-<h1>Lastest Sapm</h1>
+<h2>Lastest Sapm</h2>
 % for e in c.last_spam_entries:
 ${entry_mako.entry(e)}
 % endfor
 </div>
 
 <div style="max-width:45%;float:right;" class='box'>
-<h1>Lastest Ham</h1>
+<h2>Lastest Ham</h2>
 % for e in c.last_ham_entries:
 ${entry_mako.entry(e)}
 % endfor
 </div>
 
 <span style="float:clear;">
-<h1>Lastest Entries</h1>
+<h2>Lastest Entries</h2>
 <p>${c.page.pager()}</p>
 <table border=1>
     <tr>
