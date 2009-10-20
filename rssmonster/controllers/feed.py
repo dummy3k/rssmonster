@@ -45,7 +45,7 @@ class FeedController(BaseController):
         c.entries = []
         c.last_spam_entries = []
         c.last_ham_entries = []
-        query = c.feed.get_entries().order_by(model.FeedEntry.id.desc()).limit(30)
+        query = c.feed.get_entries().order_by(model.FeedEntry.id.desc()) #.limit(30)
         for e in query: #.limit(10):
             e.is_spam=guesser.is_spam(e)
             e.score = guesser.guess(e)
