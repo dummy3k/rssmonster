@@ -141,8 +141,10 @@ class BayesController(BaseController):
         return render('bayes/guesser.mako')
     
     def mixed_rss(self, user_id, id):
-        user = meta.find(model.User, user_id)
+        c.rss_user = meta.find(model.User, user_id)
+        log.debug("c.rss_user: %s" % c.rss_user)
         feed_data = meta.find(model.Feed, id)
+        log.debug("feed_data.id %s" % feed_data.id)
         
         import feed
         cnt_added = feed.__update__(feed_data)
@@ -157,7 +159,7 @@ class BayesController(BaseController):
         c.base_url = config['base_url']
         log.debug('c.base_url: %s' % c.base_url)
 
-        guesser = Guesser(feed_data, user)
+        guesser = Guesser(feed_data, c.rss_user)
         for entry in feed_data.get_entries().limit(30):
             c.entry = entry
             c.entry.is_spam=guesser.is_spam(entry)
