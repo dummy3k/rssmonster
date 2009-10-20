@@ -59,3 +59,23 @@ class FeedEntry(object):
         
         return ret
 
+    def mark_actions(self, return_to, user):
+        import rssmonster.lib.helpers as h
+        
+        from classification import Classification
+        classy = meta.Session\
+                .query(Classification)\
+                .filter_by(user_id = user.id, entry_id=self.id).first()
+        
+        if not classy:
+            ret.append({'title':'Spam', 'link':h.url_for(controller='/bayes', action='mark_as_spam', id=self.id, return_to=return_to)})
+            ret.append({'title':'Ham', 'link':h.url_for(controller='/bayes', action='mark_as_ham', id=self.id, return_to=return_to)})
+        elif classy.pool == 'spam':
+            ret.append({'title':'Ham', 'link':h.url_for(controller='/bayes', action='mark_as_ham', id=self.id, return_to=return_to)})
+        elif classy.pool == 'ham':
+            ret.append({'title':'Spam', 'link':h.url_for(controller='/bayes', action='mark_as_spam', id=self.id, return_to=return_to)})
+        else:
+            raise "bad pool"
+        
+        return ret
+
