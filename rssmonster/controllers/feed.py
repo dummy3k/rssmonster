@@ -86,7 +86,7 @@ class FeedController(BaseController):
 #        c.entries = c.feed.get_entries()
         guesser = bayes.Guesser(c.feed, c.user)
         c.entries = []
-        query = c.feed.get_entries().order_by(model.FeedEntry.id.desc())
+        query = c.feed.get_entries().order_by(model.FeedEntry.id.desc()).limit(30)
         for e in query: #.limit(10):
             e.is_spam=guesser.is_spam(e)
             e.score = guesser.guess(e)
