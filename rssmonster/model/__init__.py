@@ -20,7 +20,9 @@ def init_model(engine):
     meta.engine = engine
 
 orm.mapper(User, users_table)
-orm.mapper(Feed, feeds_table)
+orm.mapper(Feed, feeds_table, properties = {
+    'entries' : orm.relation(FeedEntry),
+    })
 
 orm.mapper(FeedEntry, feed_entries_table, properties = {
     'feed' : orm.relation(Feed),

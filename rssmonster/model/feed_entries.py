@@ -58,3 +58,4 @@ class FeedEntry(object):
             raise "bad pool"
         
         return ret
+

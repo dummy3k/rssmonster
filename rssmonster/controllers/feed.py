@@ -86,11 +86,19 @@ class FeedController(BaseController):
 #        c.entries = c.feed.get_entries()
         guesser = bayes.Guesser(c.feed, c.user)
         c.entries = []
+        c.last_spam_entries = []
+        c.last_ham_entries = []
         query = c.feed.get_entries().order_by(model.FeedEntry.id.desc()).limit(30)
         for e in query: #.limit(10):
             e.is_spam=guesser.is_spam(e)
             e.score = guesser.guess(e)
             c.entries.append(e)
+            
+            if len(c.last_spam_entries) < 10 and e.is_spam:
+                c.last_spam_entries.append(e)
+
+            if len(c.last_ham_entries) < 10 and not e.is_spam:
+                c.last_ham_entries.append(e)
 
         from webhelpers import paginate
         c.page = paginate.Page(c.entries, page)
@@ -114,6 +122,14 @@ class FeedController(BaseController):
              'link':h.url_for(controller='bayes', action='mixed_rss', user_id=c.user.id)
             }
         ]
+        
+        
+        
+        
+#        import operator
+#        ret = self.entries
+#        ret.sort(lambda x,y: -cmp(x.id, y.id))
+#        return ret[:10]        
         
         
         return render('feed/show_feed.mako')
