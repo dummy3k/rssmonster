@@ -30,3 +30,7 @@ a.pager {
 .rightside {
 	float:right;
 }
+
+div.box {
+    overflow:hidden;
+}

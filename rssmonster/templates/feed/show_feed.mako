@@ -46,10 +46,25 @@
 <a href="${x['link']}">${x['title']}</a>&nbsp;
 % endfor
 
+
+<p>${c.page.pager()}</p>
+
+<%namespace name='entry_mako' file='entry.mako' />
+<div style="max-width:45%;float:left;" class='box'>
 <h1>Lastest Entries</h1>
+% for e in c.page.items:
+${entry_mako.entry(e)}
+% endfor
+</div>
 
-<p>${h.url_for(page=None)}</p>
+<div style="max-width:45%;float:right;" class='box'>
+<h1>Lastest Entries</h1>
+% for e in c.page.items:
+${entry_mako.entry(e)}
+% endfor
+</div>
 
+<h1>Lastest Entries</h1>
 <p>${c.page.pager()}</p>
 <table border=1>
     <tr>
