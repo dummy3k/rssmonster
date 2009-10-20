@@ -16,3 +16,17 @@ a.pager {
 	padding: 5px;
 }
 
+.leftside, .rightside {
+	display:block;
+/*	width:45%; */
+	max-width:45%;
+}
+
+.leftside {
+	float:left;
+	margin-right: 5em;
+}
+
+.rightside {
+	float:right;
+}
