@@ -160,7 +160,7 @@ class BayesController(BaseController):
         log.debug('c.base_url: %s' % c.base_url)
 
         guesser = Guesser(feed_data, c.rss_user)
-        for entry in feed_data.get_entries().limit(30):
+        for entry in feed_data.get_entries().order_by(model.FeedEntry.id.desc()).limit(30):
             c.entry = entry
             c.entry.is_spam=guesser.is_spam(entry)
             if c.entry.is_spam:
