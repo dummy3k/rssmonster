@@ -21,7 +21,8 @@ def __update__(feed):
 #        feed.last_builddate = rss_reed.feed.lastbuilddate
 #        feed.updated = rss_reed.feed.updated_parsed
     feed.subtitle = rss_reed.feed.subtitle
-    feed.language = rss_reed.feed.language
+    if 'language' in rss_reed.feed:
+        feed.language = rss_reed.feed.language
     if 'image' in rss_reed.feed:
         feed.image = rss_reed.feed.image.href
     feed.link = rss_reed.feed.link
