@@ -424,7 +424,7 @@ form {
 }
 
 div.main {
-    float: left;
+#    float: left;
 }
 
 div.sidenav {

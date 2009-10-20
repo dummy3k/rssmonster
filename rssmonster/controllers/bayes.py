@@ -147,7 +147,7 @@ class BayesController(BaseController):
         log.debug("feed_data.id %s" % feed_data.id)
         
         import feed
-        cnt_added = feed.__update__(feed_data)
+        cnt_added = feed_data.fetch()
 
         feed = h.DefaultFeed(
             title=feed_data.title,
