@@ -31,7 +31,7 @@ class FeedEntry(object):
     __str__ = __unicode__
 
     def __repr__(self):
-        return "<User()>"
+        return "<%s()>" % __name__
         #return "<User('%s', '%s')>" % (self.name, self.openid)
 
     def actions(self, return_to, user):
