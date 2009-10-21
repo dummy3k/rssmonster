@@ -111,7 +111,8 @@ class FeedController(BaseController):
         for entry in feed_data.get_entries():
             feed.add_item(title=entry.title,
                           link=entry.link,
-                          description=entry.summary)
+                          description=entry.summary,
+                          unique_id=entry.uid)
 
         response.content_type = 'application/atom+xml'
         return feed.writeString('utf-8')

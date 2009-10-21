@@ -88,6 +88,7 @@ class Feed(object):
             else:
                 is_new = False
                 
+            log.debug("entry: %s" % entry)
             feed_entry.feed_id = self.id
             feed_entry.uid = entry['id']
             feed_entry.title = entry['title']

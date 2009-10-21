@@ -170,7 +170,8 @@ class BayesController(BaseController):
 
             feed.add_item(title=titel,
                           link=entry.link,
-                          description=render('bayes/rss_summary.mako')) #entry.summary
+                          description=render('bayes/rss_summary.mako'),
+                          unique_id=entry.uid) #entry.summary
 
         response.content_type = 'application/atom+xml'
         return feed.writeString('utf-8')
