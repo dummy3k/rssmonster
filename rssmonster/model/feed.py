@@ -76,7 +76,11 @@ class Feed(object):
 #            feed_entry = query.filter_by(feed_id = self.id, uid = entry['id']).first()
 #            log.debug("self.entries: %s" % self.entries)
 #            log.debug("self.entries: %s" % dir(self.entries))
-            feed_entry = reduce((lambda e, y: y.id==entry['id']), self.entries)
+            if self.entries:
+                feed_entry = reduce((lambda e, y: y.id==entry['id']), self.entries)
+            else:
+                feed_entry = None
+
             if not feed_entry:
                 log.debug("fetched new entry '%s' from '%s'" % (entry['title'][:20], rss_reed.feed.title[:20]))
                 feed_entry = FeedEntry()
