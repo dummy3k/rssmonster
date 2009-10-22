@@ -14,6 +14,10 @@
         <th>Is_spam</th>
         <td>${c.is_spam}&nbsp;</td>
     </tr>
+    <tr>
+        <th>Link</th>
+        <td><a href="${c.entry.link}"/>${c.entry.link}&nbsp;</a></td>
+    </tr>
 </table>
 
 Feed:
