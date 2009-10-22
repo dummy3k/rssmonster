@@ -118,6 +118,6 @@ class FeedController(BaseController):
         return feed.writeString('utf-8')
 
     def show_record(self, id):
-        feed_data = meta.find(model.Feed, id)
+        c.feed = meta.find(model.Feed, id)
         return render('feed/record.mako')
         
