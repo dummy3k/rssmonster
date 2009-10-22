@@ -37,28 +37,33 @@ class FeedController(BaseController):
             return redirect_to(controller='login', action='signin', id=None, return_to=h.url_for())
 
         c.feed = meta.find(model.Feed, id)
-
-#        query = meta.Session.query(model.FeedEntry)
-#        c.entries = query.filter(model.FeedEntry.feed_id == id)
-#        c.entries = c.feed.get_entries()
         guesser = bayes.Guesser(c.feed, c.user)
-        c.entries = []
-        c.last_spam_entries = []
-        c.last_ham_entries = []
         query = c.feed.get_entries().order_by(model.FeedEntry.id.desc()) #.limit(30)
-        for e in query: #.limit(10):
+
+        from webhelpers import paginate
+        c.page = paginate.Page(query, page)
+
+        for e in c.page.items:
             e.is_spam=guesser.is_spam(e)
             e.score = guesser.guess(e)
-            c.entries.append(e)
-            
+
+        c.last_spam_entries = []
+        c.last_ham_entries = []
+        i = 0
+        for e in query.limit(500):
+            e.is_spam=guesser.is_spam(e)
+
             if len(c.last_spam_entries) < 10 and e.is_spam:
                 c.last_spam_entries.append(e)
 
             if len(c.last_ham_entries) < 10 and not e.is_spam:
                 c.last_ham_entries.append(e)
+                
+            if len(c.last_spam_entries) >= 10 and len(c.last_ham_entries) >= 10:
+                log.debug("breaking loop after %s rows" % i)
+                break
 
-        from webhelpers import paginate
-        c.page = paginate.Page(c.entries, page)
+            i += 1
         
 
 #        from webhelpers import pagination
