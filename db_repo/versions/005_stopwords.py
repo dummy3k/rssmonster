@@ -15,7 +15,8 @@ stopwords_table = Table('stopwords', meta.metadata,
     Column('id', Integer, primary_key=True),
     Column('feed_id', Integer, ForeignKey('feeds.id')),
     Column('user_id', Integer, ForeignKey('users.id')),
-    Column('word', String(50), unique=True),
+    Column('word', String(50)),
+    UniqueConstraint('feed_id', 'user_id', 'word')
 )
 
 def upgrade():

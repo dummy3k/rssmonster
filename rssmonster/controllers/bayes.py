@@ -209,10 +209,12 @@ class BayesController(BaseController):
         guesser.save()
         log.debug("FOOOOOO")
         
-        h.flash("learned %s entries" % cnt)
         
         if needles_cnt > 0:
-            h.flash("%d entries were needlessly trained" % needles_cnt)
+            h.flash("%d entries were needlessly trained (total: %s)" % (needles_cnt, cnt))
+        else:
+            h.flash("learned %s entries" % cnt)
+        
         return h.go_back()
         
     def mark_stopword(self, id, word):
@@ -232,6 +234,23 @@ class BayesController(BaseController):
         except IntegrityError:
             h.flash("i already know that '%s' is a stop word." % word)
             meta.Session.rollback()
+        
+        return self.redo(id)
+        
+    def unmark_stopword(self, id, word):
+        if not c.user:
+            return redirect_to(controller='login', action='signin', id=None, return_to=h.url_for())
+
+        w = meta.Session.query(model.Stopword).filter_by(user_id=c.user.id, feed_id=id, word=word).first()
+        if not w:
+            h.flash("can't remove '%s', because it is not on the list." % word)
+
+        log.debug("w: %s" % w)            
+        meta.Session.delete(w)
+        
+        from sqlalchemy.exceptions import IntegrityError
+        meta.Session.commit()
+        h.flash("removed '%s' from stopwords list." % word)
         
         return self.redo(id)
         

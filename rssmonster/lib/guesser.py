@@ -12,7 +12,7 @@ def my_tokenize(msg, stopwords):
     retVal = []
     log.debug("msg: %s" % msg)
     msg = h.strip_ml_tags(msg)
-#    msg = re.sub('[^\w]', ' ', msg)
+    msg = re.sub('[\./]', ' ', msg)
     log.debug("!!!!!msg: %s" % msg)
 
     log.debug("stopwords: %s" % stopwords)

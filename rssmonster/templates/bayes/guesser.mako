@@ -14,7 +14,7 @@ ${feed_actions.render(c.feed)}
 
 <h2>Stop words</h2>
 % for word in c.stopwords:
-${word.word}, 
+${word.word}&nbsp<a href="${h.url_for(controller='bayes', action='unmark_stopword', word=word.word, return_to=h.url_for())}"/>x</a>, 
 % endfor
 
 <div class="leftside">

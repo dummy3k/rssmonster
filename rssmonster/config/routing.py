@@ -26,7 +26,8 @@ def make_map():
     map.connect('/list', controller='feed', action='show_list')
     map.connect('/feed/{id}', controller='feed', action='show_feed')
     map.connect('/feed/{id}/page/{page}', controller='feed', action='show_feed')
-    map.connect('/feed/{id}/stop/{word}', controller='bayes', action='mark_stopword')
+    map.connect('/feed/{id}/ignore/{word}', controller='bayes', action='mark_stopword')
+    map.connect('/feed/{id}/unignore/{word}', controller='bayes', action='unmark_stopword')
     map.connect('/signout', controller='login', action='signout')
     map.connect('/user/{user_id}/{controller}/{action}/{id}')
 
