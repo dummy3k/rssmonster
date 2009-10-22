@@ -12,17 +12,22 @@
 ${feed_actions.render(c.feed)}
 </div>
 
+<h2>Stop words</h2>
+% for word in c.stopwords:
+${word.word}, 
+% endfor
+
 <div class="leftside">
 <h2>Spam words</h2>
 % for word, cnt in c.pool_data_spam:
-${word} (${cnt}), 
+${word}&nbsp;(${cnt} <a href="${h.url_for(controller='bayes', action='mark_stopword', word=word, return_to=h.url_for())}"/>x</a>), 
 % endfor
 </div>
 
 <div class="rightside">
 <h2>Ham words</h2>
 % for word, cnt in c.pool_data_ham:
-${word} (${cnt}), 
+${word}&nbsp;(${cnt}&nbsp;<a href="${h.url_for(controller='bayes', action='mark_stopword', word=word, return_to=h.url_for())}"/>x</a>), 
 % endfor
 </div>
 

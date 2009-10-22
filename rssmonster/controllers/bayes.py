@@ -18,7 +18,6 @@ def __relevant__(entry):
     else:
         return entry.title
 
-
 class BayesController(BaseController):
 
     def mark_as_spam(self, id):
@@ -128,6 +127,7 @@ class BayesController(BaseController):
         c.pool_data_spam = guesser.trainer.poolData('spam')
         c.pool_data_spam.sort(key=operator.itemgetter(1))
         c.pool_data_spam.reverse()
+#        c.pool_data_spam = map(lambda x: (x[0], x[1], x[0].encode('ascii', 'ignore')), c.pool_data_spam)
 
         c.pool_data_ham = guesser.trainer.poolData('ham')
         c.pool_data_ham.sort(key=operator.itemgetter(1))
@@ -135,6 +135,11 @@ class BayesController(BaseController):
         
         c.actions = [{'link':h.url_for(controller='feed', action='show_feed', id=id),
                         'text':'Feed Details'}]
+                        
+        c.stopwords = meta.Session\
+            .query(model.Stopword)\
+            .filter_by(feed_id=id, user_id=c.user.id)
+
         return render('bayes/guesser.mako')
     
     def mixed_rss(self, user_id, id):
@@ -188,9 +193,16 @@ class BayesController(BaseController):
         guesser.clear()
 
         cnt = 0
+        needles_cnt = 0
         for entry in query:
 #            h.flash("%s :%s" % (entry.pool, __relevant__(entry.entry)))
 #            guesser.trainer.train(entry.pool, __relevant__(entry.entry))
+
+            if guesser.is_spam(entry.entry, use_classified=False) and (entry.pool == 'spam'):
+                needles_cnt += 1
+            elif not guesser.is_spam(entry.entry, use_classified=False) and (entry.pool == 'ham'):
+                needles_cnt += 1
+
             self.__mark_as__(entry.entry, entry.pool, guesser, True)
             cnt+=1
 
@@ -198,5 +210,29 @@ class BayesController(BaseController):
         log.debug("FOOOOOO")
         
         h.flash("learned %s entries" % cnt)
+        
+        if needles_cnt > 0:
+            h.flash("%d entries were needlessly trained" % needles_cnt)
         return h.go_back()
+        
+    def mark_stopword(self, id, word):
+        if not c.user:
+            return redirect_to(controller='login', action='signin', id=None, return_to=h.url_for())
+
+        w = model.Stopword()
+        w.user_id = c.user.id
+        w.feed_id = id
+        w.word = word
+        meta.Session.save(w)
+        
+        from sqlalchemy.exceptions import IntegrityError
+        try:
+            meta.Session.commit()
+            h.flash("%s? Never heard about it." % word)
+        except IntegrityError:
+            h.flash("i already know that '%s' is a stop word." % word)
+            meta.Session.rollback()
+        
+        return self.redo(id)
+        
     

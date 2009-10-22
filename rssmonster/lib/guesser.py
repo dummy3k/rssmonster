@@ -8,12 +8,15 @@ import rssmonster.model as model
 
 log = logging.getLogger(__name__)
 
-def my_tokenize(msg):
+def my_tokenize(msg, stopwords):
     retVal = []
     log.debug("msg: %s" % msg)
     msg = h.strip_ml_tags(msg)
 #    msg = re.sub('[^\w]', ' ', msg)
     log.debug("!!!!!msg: %s" % msg)
+
+    log.debug("stopwords: %s" % stopwords)
+
     for token in msg.split():
         log.debug("token: %s" % token)
         if len(token) < 4:
@@ -22,10 +25,9 @@ def my_tokenize(msg):
         token = token.lower()
         token = re.sub('^[^\w]*', '', token)
         token = re.sub('[^\w]*$', '', token)
-        
-        
-        stopWords = ['is', 'the', 'for', 'of', 'to']
-        if token in stopWords:
+
+#        stopWords = ['gegen', 'eine', 'sich', 'einem']
+        if token in stopwords:
             continue
 
         retVal.append(token)
@@ -47,8 +49,13 @@ class Guesser():
         self.filename += '/feed_%s.bayes' % str(feed.id)
         log.debug("filename:%s" % self.filename)
 
+        stopwords = meta.Session\
+                .query(model.Stopword)\
+                .filter_by(feed_id=feed.id).all()
+        self.stopwords = map(lambda x: x.word, stopwords)
+
         self.trainer = Bayes()
-        self.trainer.getTokens = my_tokenize
+        self.trainer.getTokens = lambda x: my_tokenize(x, self.stopwords)
         if os.path.exists(self.filename):
             self.trainer.load(self.filename)
         else:
@@ -60,21 +67,23 @@ class Guesser():
 
     def clear(self):
         self.trainer = Bayes()
-        self.trainer.getTokens = my_tokenize
+#        self.trainer.getTokens = my_tokenize
+        self.trainer.getTokens = lambda x: my_tokenize(x, self.stopwords)
         self.trainer.newPool('ham')
         self.trainer.newPool('spam')
     
-    def is_spam(self, entry):
-        classy = meta.Session\
-                .query(model.Classification)\
-                .filter_by(user_id = self.user.id, entry_id=entry.id).first()
-        if classy:
-            if classy.pool == 'spam':
-                return True
-            elif classy.pool == 'ham':
-                return False
-            else:
-                raise "bad pool"
+    def is_spam(self, entry, use_classified=True):
+        if use_classified:
+            classy = meta.Session\
+                    .query(model.Classification)\
+                    .filter_by(user_id = self.user.id, entry_id=entry.id).first()
+            if classy:
+                if classy.pool == 'spam':
+                    return True
+                elif classy.pool == 'ham':
+                    return False
+                else:
+                    raise "bad pool"
                                 
         g = self.guess(entry)
 
