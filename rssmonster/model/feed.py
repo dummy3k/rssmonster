@@ -30,10 +30,6 @@ class Feed(object):
         return "<Feed()>"
         #return "<Feed('%s', '%s')>" % (self.name, self.openid)
 
-    def get_entry_count(self):
-        query = meta.Session.query(FeedEntry)
-        return query.filter_by(feed_id=self.id).count()
-
     def get_entries(self):
         query = meta.Session.query(FeedEntry)
         return query.filter(FeedEntry.feed_id == self.id)

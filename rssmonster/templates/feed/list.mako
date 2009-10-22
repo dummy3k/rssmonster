@@ -20,7 +20,7 @@
     % for feed in c.feeds:
     <tr>
         <td>${feed.id}</td>
-        <td>${feed.get_entry_count()}</td>
+        <td>${len(feed.entries)}</td>
         <td>
             <a href ='${h.url_for(controller="feed", action="show_feed", id=feed.id)}'>
                 ${feed.title}</a>
