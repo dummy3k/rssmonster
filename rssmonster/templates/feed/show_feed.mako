@@ -5,7 +5,11 @@
 
 <%def name="content()">
 
-##<p>${h.dump(c.feed)}</p>
+%if c.feed.image:
+<img src='${c.feed.image}' alt='logo'/>
+%endif
+<a href ='${h.url_for(controller="feed", action="show_feed", id=c.feed.id)}'>${c.feed.title}</a>
+<p>${c.feed.subtitle}</p>
 
 <table border=1>
     <tr>
@@ -42,10 +46,8 @@
     </tr>
 </table>
 
-% for x in c.feed.actions(h.url_for(), c.user):
-<a href="${x['link']}">${x['title']}</a>&nbsp;
-% endfor
-
+<%namespace name='feed_actions' file='feed_actions.mako' />
+${feed_actions.render(c.feed)}
 
 <p>${c.page.pager()}</p>
 

@@ -17,9 +17,8 @@
 </table>
 
 Feed:
-% for x in c.feed.actions(h.url_for(), c.user):
-<a href="${x['link']}">${x['title']}</a>&nbsp;
-% endfor
+<%namespace name='feed_actions' file='/feed/feed_actions.mako' />
+${feed_actions.render(c.feed)}
 
 Entry:
 % for x in c.entry.actions(h.url_for(), c.user):
