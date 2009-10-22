@@ -77,7 +77,9 @@ class Feed(object):
 #            log.debug("self.entries: %s" % self.entries)
 #            log.debug("self.entries: %s" % dir(self.entries))
             if self.entries:
-                feed_entry = reduce((lambda e, y: y.id==entry['id']), self.entries)
+                feed_entry = filter((lambda y: y.uid==entry['id']), self.entries)
+                if feed_entry:
+                    feed_entry = feed_entry[0]
             else:
                 feed_entry = None
 
