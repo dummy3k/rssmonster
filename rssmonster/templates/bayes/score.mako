@@ -25,6 +25,8 @@ Entry:
 <a href="${x['link']}">${x['title']}</a>&nbsp;
 % endfor
 
+<h2>summary</h2>
+${c.entry.summary}
 <h2>tokens</h2>
 % for word in c.tokens:
 ${word | h}, 
