@@ -6,7 +6,8 @@ Installation and Setup
 
 Install ``rssmonster`` using easy_install::
 
-    easy_install rssmonster SQLAlchemy Pylons SQLAlchemy-migrate mock
+    easy_install rssmonster SQLAlchemy Pylons SQLAlchemy-migrate mock python-openid feedparser
+    easy_install http://dl.getdropbox.com/u/530973/Reverend-0.3dev_r17655-py2.6.egg
 
 Make a config file as follows::
 
