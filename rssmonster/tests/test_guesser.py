@@ -23,7 +23,7 @@ class TestGuesser(TestController):
 
     def test_tokenize(self):
         input = "Augenblick: Leichtigkeit@ des Seins"
-        ret = my_tokenize(input)
+        ret = my_tokenize(input, [])
         self.assertTrue('leichtigkeit' in ret)
         self.assertFalse('des' in ret) # less then 4 chars
         self.assertTrue('seins' in ret)
