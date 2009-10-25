@@ -31,9 +31,16 @@ Entry:
 
 <h2>summary</h2>
 ${c.entry.summary}
+
 <h2>tokens</h2>
 % for word in c.tokens:
+%   if word in map(lambda x: x[0], c.pool_data_spam) or word in map(lambda x: x[0], c.pool_data_ham):
+<b>
+%   endif
 ${word | h}, 
+%   if word in map(lambda x: x[0], c.pool_data_spam) or word in map(lambda x: x[0], c.pool_data_ham):
+</b>
+%   endif
 % endfor
 
 
