@@ -38,7 +38,8 @@ class Feed(object):
         import feedparser
 
         rss_reed = feedparser.parse(self.url)
-        self.title = rss_reed.feed.title
+	if rss_reed.feed.title:
+	    self.title = rss_reed.feed.title
     #        self.last_builddate = rss_reed.feed.lastbuilddate
     #        self.updated = rss_reed.feed.updated_parsed
         self.subtitle = rss_reed.feed.subtitle
