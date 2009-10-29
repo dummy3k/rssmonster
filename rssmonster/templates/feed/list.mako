@@ -25,7 +25,8 @@
             <a href ='${h.url_for(controller="feed", action="show_feed", id=feed.id)}'>
                 ${feed.title}</a>
         </td>
-        <td>${feed.last_fetch}</td>
+##        <td>${format_timedetla(datetime.now()-feed.last_fetch, locale='en_US')}</td>
+        <td>${h.age(feed.last_fetch)}</td>
         <td>${feed.last_builddate}</td>
         <td>${feed.updated}</td>
         <td>${feed.language}</td>

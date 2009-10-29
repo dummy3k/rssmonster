@@ -100,3 +100,12 @@ def strip_ml_tags(in_text):
 	join_char=''
 	return join_char.join(s_list)
 
+def age(x):
+    if not x:
+        return "never"
+        
+    from babel.dates import format_timedelta
+    from datetime import datetime
+    
+    return format_timedelta(datetime.now()-x, locale='en_US')
+
