@@ -37,29 +37,34 @@ class Feed(object):
     def fetch(self):
         import feedparser
 
-        rss_reed = feedparser.parse(self.url)
-        if not rss_reed:
+        rss_feed = feedparser.parse(self.url)
+        if not rss_feed:
             raise "failed to fetch feed"
 
-        if hasattr(rss_reed.feed,'title'):
-	        self.title = rss_reed.feed.title
+        if not 'entries' in rss_feed:
+	        log.error("no entries while fetching '%s'" % self.title)
+	        from pylons.controllers.util import abort
+	        abort(503)
+	        
+        if hasattr(rss_feed.feed,'title'):
+	        self.title = rss_feed.feed.title
         else:
             log.warn("feed %s has no title" % self.id)
-    #        self.last_builddate = rss_reed.feed.lastbuilddate
-    #        self.updated = rss_reed.feed.updated_parsed
-        self.subtitle = rss_reed.feed.subtitle
-        if 'language' in rss_reed.feed:
-            self.language = rss_reed.feed.language
-        if 'image' in rss_reed.feed:
-            self.image = rss_reed.feed.image.href
-        self.link = rss_reed.feed.link
+    #        self.last_builddate = rss_feed.feed.lastbuilddate
+    #        self.updated = rss_feed.feed.updated_parsed
+        self.subtitle = rss_feed.feed.subtitle
+        if 'language' in rss_feed.feed:
+            self.language = rss_feed.feed.language
+        if 'image' in rss_feed.feed:
+            self.image = rss_feed.feed.image.href
+        self.link = rss_feed.feed.link
         self.last_fetch = datetime.now()
         meta.Session.update(self)
 
         retval = {'cnt_added':0, 'is_up2date':False}
 #        retval.is_up2date = False
 #        retval.cnt_added = 0;
-        for entry in rss_reed['entries']:
+        for entry in rss_feed['entries']:
 #            query = meta.Session.query(model.FeedEntry)
 #            feed_entry = query.filter_by(feed_id = self.id, uid = entry['id']).first()
 #            log.debug("self.entries: %s" % self.entries)
@@ -73,7 +78,7 @@ class Feed(object):
                 feed_entry = None
 
             if not feed_entry:
-                log.debug("fetched new entry '%s' from '%s'" % (entry['title'][:20], rss_reed.feed.title[:20]))
+                log.debug("fetched new entry '%s' from '%s'" % (entry['title'][:20], rss_feed.feed.title[:20]))
                 feed_entry = FeedEntry()
                 is_new = True
             else:
