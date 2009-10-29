@@ -2,7 +2,7 @@
 
 
 body  {
-	font: 100% Verdana;
+	font: 10pt Verdana;
 	background: #ffffff;
 	margin: 0;
 	padding: 0;
@@ -45,7 +45,7 @@ img {
 }
 
 p, a {
-    font-size: 14px;	
+/*    font-size: 14px;	*/
 }
 
 table { border: 0px; background-color:#85ACF7; border-style:solid; }
@@ -86,7 +86,6 @@ th { border: 0px; color: White; border-style:solid;
 #headmenu a:link,
 #headmenu a:visited,
 #headmenu a:active {
-	font-size:12px;
 	color: #0000BB;
 	text-decoration: none;
 }

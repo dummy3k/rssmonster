@@ -53,6 +53,7 @@ class Feed(object):
         if 'image' in rss_reed.feed:
             self.image = rss_reed.feed.image.href
         self.link = rss_reed.feed.link
+        self.last_fetch = datetime.now()
         meta.Session.update(self)
 
         
