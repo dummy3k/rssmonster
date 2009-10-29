@@ -56,8 +56,9 @@ class Feed(object):
         self.last_fetch = datetime.now()
         meta.Session.update(self)
 
-        
-        cnt_added = 0;
+        retval = {'cnt_added':0, 'is_up2date':False}
+#        retval.is_up2date = False
+#        retval.cnt_added = 0;
         for entry in rss_reed['entries']:
 #            query = meta.Session.query(model.FeedEntry)
 #            feed_entry = query.filter_by(feed_id = self.id, uid = entry['id']).first()
@@ -67,6 +68,7 @@ class Feed(object):
                 feed_entry = filter((lambda y: y.uid==entry['id']), self.entries)
                 if feed_entry:
                     feed_entry = feed_entry[0]
+                    retval['is_up2date'] = True
             else:
                 feed_entry = None
 
@@ -87,13 +89,16 @@ class Feed(object):
             
             if is_new:
                 meta.Session.save(feed_entry)
-                cnt_added+=1
+                retval['cnt_added']+=1
             else:
                 meta.Session.update(feed_entry)
                 
 
         meta.Session.commit()
-        return cnt_added
+        
+        if not retval['is_up2date']:
+            log.warn("feed '%s' is not up to date" % self.title)
+        return retval
         
 
 
