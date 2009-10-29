@@ -41,8 +41,8 @@ class Feed(object):
         if not rss_reed:
             raise "failed to fetch feed"
 
-	if rss_reed.feed.title:
-	    self.title = rss_reed.feed.title
+        if hasattr(rss_reed.feed,'title'):
+	        self.title = rss_reed.feed.title
         else:
             log.warn("feed %s has no title" % self.id)
     #        self.last_builddate = rss_reed.feed.lastbuilddate
