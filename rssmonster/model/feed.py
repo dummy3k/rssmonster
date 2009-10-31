@@ -46,18 +46,30 @@ class Feed(object):
 	        from pylons.controllers.util import abort
 	        abort(503)
 	        
-        if hasattr(rss_feed.feed,'title'):
+        if 'title' in rss_feed.feed:
 	        self.title = rss_feed.feed.title
         else:
             log.warn("feed %s has no title" % self.id)
+            
+#        if hasattr(rss_feed.feed,'subtitle'):
+        if 'subtitle' in rss_feed.feed:
+	        self.subtitle = rss_feed.feed.subtitle
+        else:
+            log.warn("feed %s has no subtitle" % self.id)
+            
+            
     #        self.last_builddate = rss_feed.feed.lastbuilddate
     #        self.updated = rss_feed.feed.updated_parsed
-        self.subtitle = rss_feed.feed.subtitle
         if 'language' in rss_feed.feed:
             self.language = rss_feed.feed.language
         if 'image' in rss_feed.feed:
             self.image = rss_feed.feed.image.href
-        self.link = rss_feed.feed.link
+            
+        if 'link' in rss_feed.feed:
+	        self.link = rss_feed.feed.link
+        else:
+            log.warn("feed %s has no link" % self.id)
+
         self.last_fetch = datetime.now()
         meta.Session.update(self)
 
