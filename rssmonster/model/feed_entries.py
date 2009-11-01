@@ -17,10 +17,10 @@ feed_entries_table = Table('feed_entries', meta.metadata,
 
 class FeedEntry(object):
     def __init__(self):
-        log.debug("Hellllllo!")
-        
+        pass
+                
     def __unicode__(self):
-        return self.name
+        return self.__repr__()
 
     def getHashedEmailAddress(self):
         if self.email:
@@ -32,7 +32,6 @@ class FeedEntry(object):
 
     def __repr__(self):
         return "<%s()>" % __name__
-        #return "<User('%s', '%s')>" % (self.name, self.openid)
 
     def actions(self, return_to, user):
         import rssmonster.lib.helpers as h
