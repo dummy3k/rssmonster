@@ -94,11 +94,17 @@ class Feed(object):
             else:
                 is_new = False
                 
-            log.debug("entry: %s" % entry)
+            #log.debug("entry: %s" % entry)
             feed_entry.feed_id = self.id
             feed_entry.uid = entry['id']
             feed_entry.title = entry['title']
-            feed_entry.updated = datetime.now()
+            log.debug("entry['updated_parsed']['tm_hour'] = %s" % entry['updated_parsed'])
+            
+            updated = entry['updated_parsed']
+            feed_entry.updated = datetime(updated.tm_year, updated.tm_mon, updated.tm_mday, updated.tm_hour, updated.tm_min, updated.tm_sec)
+            if feed_entry.updated > datetime.now():
+                log.warn("entry %s is ahead of time" % entry.id)
+                
             if 'summary' in entry:
                 feed_entry.summary = entry['summary']
             feed_entry.link = entry['link']

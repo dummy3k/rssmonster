@@ -45,7 +45,8 @@ ${entry_mako.entry(e)}
 
     % for entry in c.page.items:
     <tr class='${h.iif(entry.is_spam, "spam", "")}'>
-        <td><a name="${entry.id}" id="${entry.id}">${entry.id}</a></td>
+        <td><a name="${entry.id}">${entry.id}</a></td>
+        <td>${entry.updated}</td>
         <td>
             <a href='${entry.link}' class='${h.iif(entry.is_spam, "spam", "")}'>${entry.title}</a>
         </td>
