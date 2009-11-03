@@ -13,6 +13,7 @@ feed_entries_table = Table('feed_entries', meta.metadata,
     Column('title', String(100)),
     Column('summary', String(255)),
     Column('link', String(255)),
+    Column('updated', DateTime),
 )
 
 class FeedEntry(object):

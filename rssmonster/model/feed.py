@@ -51,13 +51,11 @@ class Feed(object):
         else:
             log.warn("feed %s has no title" % self.id)
             
-#        if hasattr(rss_feed.feed,'subtitle'):
         if 'subtitle' in rss_feed.feed:
 	        self.subtitle = rss_feed.feed.subtitle
         else:
             log.warn("feed %s has no subtitle" % self.id)
-            
-            
+
     #        self.last_builddate = rss_feed.feed.lastbuilddate
     #        self.updated = rss_feed.feed.updated_parsed
         if 'language' in rss_feed.feed:
@@ -100,6 +98,7 @@ class Feed(object):
             feed_entry.feed_id = self.id
             feed_entry.uid = entry['id']
             feed_entry.title = entry['title']
+            feed_entry.updated = datetime.now()
             if 'summary' in entry:
                 feed_entry.summary = entry['summary']
             feed_entry.link = entry['link']

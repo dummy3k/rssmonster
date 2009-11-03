@@ -6,18 +6,13 @@
 <%def name="content()">
 
 <table>
-    <tr>
-        <th>Spam Score</th>
-        <td>${c.score}&nbsp;</td>
-    </tr>
-    <tr>
-        <th>Is_spam</th>
-        <td>${c.is_spam}&nbsp;</td>
-    </tr>
+    <tr><th>Spam Score</th><td>${c.score}&nbsp;</td></tr>
+    <tr><th>Is_spam</th><td>${c.is_spam}&nbsp;</td></tr>
     <tr>
         <th>Link</th>
         <td><a href="${c.entry.link}"/>${c.entry.link}&nbsp;</a></td>
     </tr>
+    <tr><th>Updated</th><td>${c.entry.updated}&nbsp;</td></tr>
 </table>
 
 Feed:
