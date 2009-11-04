@@ -165,32 +165,40 @@ class BayesController(BaseController):
 
         guesser = Guesser(feed_data, c.rss_user)
         last_summary = None
+        spam_entries = []
         for entry in feed_data.get_entries().order_by(model.FeedEntry.id.desc()).limit(30):
             log.debug(entry.updated)
             c.entry = entry
             c.entry.is_spam=guesser.is_spam(entry)
-            if c.entry.is_spam:
-                titel = "[SPAM] %s" % entry.title
-            else:
-                titel = entry.title
 
-            if entry.updated:
-                if not last_summary:
-                    last_summary = entry.updated
-                    log.debug("first: %s" % entry.updated)
-                    
-                if last_summary - timedelta(minutes=1) > entry.updated:
-                    feed.add_item(title="!!! Spam Summary",
-                                  link=entry.link,
-                                  description=render('bayes/rss_summary.mako'),
-                                  unique_id=md5().hexdigest()) #entry.summary
-                    last_summary = entry.updated
-                    log.debug("next: %s" % entry.updated)
+            if c.entry.is_spam:
+                if entry.updated:
+                    if not last_summary:
+                        last_summary = entry.updated
+                        log.debug("first: %s" % entry.updated)
+                        
+                    if last_summary - timedelta(minutes=1) > entry.updated:
+                        c.entries = spam_entries
+                        feed.add_item(title="RssMonster - Spam Summary",
+                                      link=entry.link,
+                                      description=render('bayes/spam_report.mako'),
+                                      unique_id=md5().hexdigest()) #entry.summary
+                        last_summary = entry.updated
+                        spam_entries = []
+                        log.debug("next: %s" % entry.updated)
                 
-            feed.add_item(title=titel,
-                          link=entry.link,
-                          description=render('bayes/rss_summary.mako'),
-                          unique_id=entry.uid) #entry.summary
+                spam_entries.append(entry)
+                
+            else:                
+                if c.entry.is_spam:
+                    titel = "[SPAM] %s" % entry.title
+                else:
+                    titel = entry.title
+
+                feed.add_item(title=titel,
+                              link=entry.link,
+                              description=render('bayes/rss_summary.mako'),
+                              unique_id=entry.uid) #entry.summary
 
         response.content_type = 'application/atom+xml'
         return feed.writeString('utf-8')
