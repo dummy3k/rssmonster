@@ -3,6 +3,7 @@ import meta
 import hashlib
 from datetime import datetime
 from feed_entries import FeedEntry
+from pylons import config
 
 import logging
 log = logging.getLogger(__name__)
@@ -35,6 +36,9 @@ class Feed(object):
         return query.filter(FeedEntry.feed_id == self.id)
 
     def fetch(self):
+        if config['offline'] == 'True':
+            return
+    
         import feedparser
 
         rss_feed = feedparser.parse(self.url)

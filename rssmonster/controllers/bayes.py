@@ -46,6 +46,7 @@ class BayesController(BaseController):
 
     def __mark_as__(self, entry, pool, guesser, force=False):
         """ when forced the entry is updated even if the db says it is already """
+        
         log.debug("entry.id: %s" % entry.id)
         classy = meta.Session\
                 .query(model.Classification)\
@@ -80,8 +81,9 @@ class BayesController(BaseController):
             other_pool = 'spam'
         else:
             raise "bad pool"
-            
-#        guesser.trainer.untrain(other_pool, __relevant__(entry), untrain_id)
+
+        if untraind_id:            
+            guesser.trainer.untrain(other_pool, __relevant__(entry), untrain_id)
         guesser.save()
 
         if not force:
