@@ -8,7 +8,7 @@
 %if c.feed.image:
 <img src='${c.feed.image}' alt='logo' style='float:right;'/>
 %endif
-<a href ='${h.url_for(str(c.feed.link))}'>${c.feed.title}</a>
+<a href ='${h.url_for(str(c.feed.link))}' target='_blank'>${c.feed.title}</a>
 <p>${c.feed.subtitle}</p>
 
 <%namespace name='feed_actions' file='feed_actions.mako' />
@@ -48,7 +48,7 @@ ${entry_mako.entry(e)}
         <td><a name="${entry.id}">${entry.id}</a></td>
         <td>${entry.updated}</td>
         <td>
-            <a href='${entry.link}' class='${h.iif(entry.is_spam, "spam", "")}'>${entry.title}</a>
+            <a href='${entry.link}' class='${h.iif(entry.is_spam, "spam", "")}' target='_blank'>${entry.title}</a>
         </td>
         <td>${entry.score['spam'] and "%.4f" % entry.score['spam']}</td>
         <td>${entry.score['ham'] and "%.4f" % entry.score['ham']}</td>

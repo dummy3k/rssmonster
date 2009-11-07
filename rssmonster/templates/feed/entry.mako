@@ -2,7 +2,7 @@
 
 <div style='max-width:100%;white-space:nowrap;clear:both'>
     <div style='max-width:60%;width:80%;overflow:hidden;float:left;'>
-        <a style='max-width:100%;overflow:hidden;float:left;' href="${e.link}"}'>
+        <a style='max-width:100%;overflow:hidden;float:left;' href='${e.link}' target='_blank'>
             ${e.title}</a>
     </div>
     <div style='float:right;text-align:right;'>
