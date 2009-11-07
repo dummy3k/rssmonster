@@ -25,7 +25,7 @@ Entry:
 % endfor
 
 <h2>summary</h2>
-${c.entry.summary}
+${h.strip_ml_tags(c.entry.summary)}
 
 <h2>tokens</h2>
 % for word in c.tokens:

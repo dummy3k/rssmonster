@@ -16,9 +16,11 @@ log = logging.getLogger(__name__)
 
 def __relevant__(entry):
     if entry.summary:
-        return entry.title + " " + entry.summary
+        retval = entry.title + " " + entry.summary
     else:
-        return entry.title
+        retval = entry.title
+
+    return h.strip_ml_tags(retval)
 
 class BayesController(BaseController):
 
