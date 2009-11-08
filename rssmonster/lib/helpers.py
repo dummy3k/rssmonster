@@ -8,6 +8,8 @@ from webhelpers.html.tags import *
 from webhelpers.html.secure_form import secure_form
 from webhelpers.pylonslib import Flash as _Flash
 from routes import url_for
+import re
+from datetime import datetime, timedelta
 #from webhelpers.html.converters import markdown
 
 #http://pylonshq.com/docs/en/0.9.7/thirdparty/webhelpers/feedgenerator/
@@ -108,4 +110,20 @@ def age(x):
     from datetime import datetime
     
     return format_timedelta(datetime.now()-x, locale='en_US')
+
+def timedelta_from_string(s):
+    m = re.match('(\d+)(\w)', s)
+
+    if m.group(2) == 'm':
+        return timedelta(minute=m.group(1))
+    
+    if m.group(2) == 'h':
+        return timedelta(hours=int(m.group(1)))
+
+    if m.group(2) == 'd':
+        return timedelta(days=int(m.group(1)))
+
+    if m.group(2) == 'w':
+        return timedelta(days=int(m.group(1)*7))
+
 
