@@ -82,8 +82,8 @@ class BayesController(BaseController):
         else:
             raise "bad pool"
 
-        if untraind_id:            
-            guesser.trainer.untrain(other_pool, __relevant__(entry), untrain_id)
+#        if untraind_id:            
+#            guesser.trainer.untrain(other_pool, __relevant__(entry), untrain_id)
         guesser.save()
 
         if not force:
@@ -170,18 +170,24 @@ class BayesController(BaseController):
         guesser = Guesser(feed_data, c.rss_user)
         last_summary = None
         spam_entries = []
+        
+        if request.params.get('report'):
+            delta = h.timedelta_from_string(request.params.get('report'))
+            
         for entry in feed_data.get_entries().order_by(model.FeedEntry.id.desc()).limit(30):
             log.debug(entry.updated)
             c.entry = entry
             c.entry.is_spam=guesser.is_spam(entry)
 
             if c.entry.is_spam:
+                if not delta:
+                    
                 if entry.updated:
                     if not last_summary:
                         last_summary = entry.updated
                         log.debug("first: %s" % entry.updated)
                         
-                    if last_summary - timedelta(minutes=1) > entry.updated:
+                    if last_summary - delta > entry.updated:
                         c.entries = spam_entries
                         feed.add_item(title="RssMonster - Spam Summary",
                                       link=entry.link,
