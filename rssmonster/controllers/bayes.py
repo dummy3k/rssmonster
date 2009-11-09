@@ -33,7 +33,7 @@ def add_spam_report(feed, spam_entries):
     feed.add_item(title="RssMonster - Spam Summary",
                   link="http://example.com",
                   description=render('bayes/spam_report.mako'),
-                  unique_id=hasher.hexdigest()) #entry.summary
+                  unique_id=hasher.hexdigest())
 
 class BayesController(BaseController):
 

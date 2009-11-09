@@ -1,6 +1,18 @@
 <%namespace name='feed_actions' file='/feed/feed_actions.mako' />
 ## ${feed_actions.render(c.feed)}
 
+<table>
 %for entry in c.entries:
-<a href="${h.url_for(controller='bayes', action='show_score', id=entry.id)}">${entry.title}</a><br>
+<tr>
+<td><a href="${entry.link}">${entry.title}</a></td>
+
+<td>
+% for x in entry.actions(h.url_for(), c.user):
+<a href="${x['link']}">${x['title']}</a>&nbsp;
+% endfor
+</td>
+
+</tr>
 %endfor
+
+</table>
