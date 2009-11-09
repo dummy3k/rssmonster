@@ -115,7 +115,7 @@ def timedelta_from_string(s):
     m = re.match('(\d+)(\w)', s)
 
     if m.group(2) == 'm':
-        return timedelta(minute=m.group(1))
+        return timedelta(minutes=int(m.group(1)))
     
     if m.group(2) == 'h':
         return timedelta(hours=int(m.group(1)))

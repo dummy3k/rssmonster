@@ -173,30 +173,33 @@ class BayesController(BaseController):
         
         if request.params.get('report'):
             delta = h.timedelta_from_string(request.params.get('report'))
-            
+        else:
+            delta = None
+
+        log.debug("delta: %s" % delta)
+        log.debug("request.params.get('report'): %s" % request.params.get('report'))
+        log.debug("request.params: %s" % request.params)
+                
         for entry in feed_data.get_entries().order_by(model.FeedEntry.id.desc()).limit(30):
             log.debug(entry.updated)
             c.entry = entry
             c.entry.is_spam=guesser.is_spam(entry)
 
-            if c.entry.is_spam:
-                if not delta:
+            if c.entry.is_spam and delta and entry.updated:
+                if not last_summary:
+                    last_summary = entry.updated
+                    log.debug("first: %s" % entry.updated)
                     
-                if entry.updated:
-                    if not last_summary:
-                        last_summary = entry.updated
-                        log.debug("first: %s" % entry.updated)
-                        
-                    if last_summary - delta > entry.updated:
-                        c.entries = spam_entries
-                        feed.add_item(title="RssMonster - Spam Summary",
-                                      link=entry.link,
-                                      description=render('bayes/spam_report.mako'),
-                                      unique_id=md5().hexdigest()) #entry.summary
-                        last_summary = entry.updated
-                        spam_entries = []
-                        log.debug("next: %s" % entry.updated)
-                
+                if last_summary - delta > entry.updated:
+                    c.entries = spam_entries
+                    feed.add_item(title="RssMonster - Spam Summary",
+                                  link=entry.link,
+                                  description=render('bayes/spam_report.mako'),
+                                  unique_id=md5().hexdigest()) #entry.summary
+                    last_summary = entry.updated
+                    spam_entries = []
+                    log.debug("next: %s" % entry.updated)
+            
                 spam_entries.append(entry)
                 
             else:                
