@@ -7,7 +7,7 @@
 <td><a href="${entry.link}">${entry.title}</a></td>
 
 <td>
-% for x in entry.actions(h.url_for(), c.user):
+% for x in entry.actions(h.url_for(), c.rss_user):
 <a href="${x['link']}">${x['title']}</a>&nbsp;
 % endfor
 </td>
