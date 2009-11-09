@@ -176,10 +176,6 @@ class BayesController(BaseController):
         else:
             delta = None
 
-        log.debug("delta: %s" % delta)
-        log.debug("request.params.get('report'): %s" % request.params.get('report'))
-        log.debug("request.params: %s" % request.params)
-                
         for entry in feed_data.get_entries().order_by(model.FeedEntry.id.desc()).limit(30):
             log.debug(entry.updated)
             c.entry = entry
