@@ -22,6 +22,19 @@ def __relevant__(entry):
 
     return h.strip_ml_tags(retval)
 
+def add_spam_report(feed, spam_entries):
+    c.entries = spam_entries
+    
+    hasher = md5()
+    for entry in spam_entries:
+        hasher.update(entry.uid)
+    
+    log.debug("hasher.hexdigest() %s" % hasher.hexdigest())
+    feed.add_item(title="RssMonster - Spam Summary",
+                  link="http://example.com",
+                  description=render('bayes/spam_report.mako'),
+                  unique_id=hasher.hexdigest()) #entry.summary
+
 class BayesController(BaseController):
 
     def mark_as_spam(self, id):
@@ -187,11 +200,8 @@ class BayesController(BaseController):
                     log.debug("first: %s" % entry.updated)
                     
                 if last_summary - delta > entry.updated:
-                    c.entries = spam_entries
-                    feed.add_item(title="RssMonster - Spam Summary",
-                                  link=entry.link,
-                                  description=render('bayes/spam_report.mako'),
-                                  unique_id=md5().hexdigest()) #entry.summary
+                    add_spam_report(feed, spam_entries)
+                    
                     last_summary = entry.updated
                     spam_entries = []
                     log.debug("next: %s" % entry.updated)
@@ -208,6 +218,12 @@ class BayesController(BaseController):
                               link=entry.link,
                               description=render('bayes/rss_summary.mako'),
                               unique_id=entry.uid) #entry.summary
+
+
+        if len(spam_entries) > 0:
+            add_spam_report(feed, spam_entries)
+            log.debug("last: %s" % entry.updated)
+    
 
         response.content_type = 'application/atom+xml'
         return feed.writeString('utf-8')
