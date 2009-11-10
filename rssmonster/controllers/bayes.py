@@ -35,6 +35,16 @@ def add_spam_report(feed, spam_entries):
                   link="http://example.com",
                   description=render('bayes/spam_report.mako'),
                   unique_id=hasher.hexdigest())
+                  
+
+def cmp_updated(x,y):
+    if x.updated>y.updated:
+        return 1
+    elif x.updated==y.updated:
+        return 0
+    else: # x<y
+        return -1
+    
 
 class BayesController(BaseController):
 
@@ -190,7 +200,14 @@ class BayesController(BaseController):
         else:
             delta = None
 
-        for entry in feed_data.get_entries().order_by(model.FeedEntry.id.desc()).limit(30):
+        entries = feed_data.get_entries().order_by(model.FeedEntry.id.desc()).limit(30)
+        import operator
+        tmp = []
+        for x in entries:
+            tmp.append(x)
+        entries = sorted(tmp, cmp_updated)
+        
+        for entry in entries:
             log.debug(entry.updated)
             c.entry = entry
             c.entry.is_spam=guesser.is_spam(entry)

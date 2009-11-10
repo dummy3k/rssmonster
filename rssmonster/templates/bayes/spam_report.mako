@@ -7,7 +7,7 @@
 <td><a href="${entry.link}">${entry.title}</a></td>
 
 <td>
-% for x in entry.actions(h.url_for(), c.rss_user):
+% for x in entry.actions(c.baseurl + h.url_for(controller='bayes', action='show_score', id=entry.id), c.rss_user):
 <a href="${c.baseurl + x['link']}">${x['title']}</a>&nbsp;
 % endfor
 </td>
