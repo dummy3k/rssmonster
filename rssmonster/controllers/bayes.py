@@ -24,6 +24,7 @@ def __relevant__(entry):
 
 def add_spam_report(feed, spam_entries):
     c.entries = spam_entries
+    c.baseurl = config['base_url']
     
     hasher = md5()
     for entry in spam_entries:
