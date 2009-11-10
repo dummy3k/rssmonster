@@ -38,7 +38,13 @@ def add_spam_report(feed, spam_entries):
                   
 
 def cmp_updated(x,y):
-    if x.updated>y.updated:
+    if not x.updated and not y.updated:
+        return 0
+    elif x.updated and not y.updated:
+        return 1
+    elif not x.updated and y.updated:
+        return -1
+    elif x.updated>y.updated:
         return 1
     elif x.updated==y.updated:
         return 0
