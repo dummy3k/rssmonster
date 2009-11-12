@@ -70,7 +70,7 @@ class LoginController(BaseController):
             h.flash(_("Already signed in."))
             return h.go_back()
 
-        c.return_to = request.params.get('return_to', None)
+        c.return_to = config['base_url'] + request.params.get('return_to', '')
         return render('login/signin.mako')
 
     def signin_POST(self):
@@ -82,6 +82,7 @@ class LoginController(BaseController):
         if openid is None:
             log.warn("openid is None")
             h.flash(problem_msg)
+            c.return_to = config['base_url'] + request.params.get('return_to', '')
             return render('login/signin.mako')
         try:
             authrequest = self.consumer.begin(openid)
@@ -98,7 +99,6 @@ class LoginController(BaseController):
 
         authrequest.addExtension(sreg_request)
         redirecturl = authrequest.redirectURL(config['base_url'],
-            #h.url_for(controller='main', action='index', qualified=True),
             return_to=config['base_url'] + h.url_for(action='verified', qualified=False, 
                                                      return_to=request.params.get('return_to', None)),
             immediate=False
