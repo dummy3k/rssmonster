@@ -18,15 +18,13 @@ def my_tokenize(msg, stopwords):
     log.debug("stopwords: %s" % stopwords)
 
     for token in msg.split():
-        log.debug("token: %s" % token)
-        if len(token) < 4:
-            continue
-        
         token = token.lower()
         token = re.sub('^[^\w]*', '', token)
         token = re.sub('[^\w]*$', '', token)
+        if len(token) < 4:
+            continue
+#        log.debug("token: %s" % token)
 
-#        stopWords = ['gegen', 'eine', 'sich', 'einem']
         if token in stopwords:
             continue
 
