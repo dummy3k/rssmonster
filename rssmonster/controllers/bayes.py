@@ -23,18 +23,25 @@ def __relevant__(entry):
     return h.strip_ml_tags(retval)
 
 def add_spam_report(feed, spam_entries):
+    if len(spam_entries) == 0:
+        return
+        
     c.entries = spam_entries
     c.baseurl = config['base_url']
     
     hasher = md5()
-    for entry in spam_entries:
-        hasher.update(entry.uid)
+    #~ for entry in spam_entries:
+        #~ hasher.update(entry.uid)
     
-    log.debug("hasher.hexdigest() %s" % hasher.hexdigest())
-    feed.add_item(title="RssMonster - Spam Summary",
+    ts = spam_entries[len(spam_entries)-1].updated
+    title="RssMonster - Spam Summary - %s" % spam_entries[0].updated
+    hasher.update(title)
+    #log.debug("hasher.hexdigest() %s" % hasher.hexdigest())
+    feed.add_item(title=title,
                   link="http://example.com",
                   description=render('bayes/spam_report.mako'),
-                  unique_id=hasher.hexdigest())
+                  unique_id=hasher.hexdigest(),
+                  pubdate=ts)
                   
 
 def cmp_updated(x,y):
@@ -198,39 +205,56 @@ class BayesController(BaseController):
         log.debug('c.base_url: %s' % c.base_url)
 
         guesser = Guesser(feed_data, c.rss_user)
-        last_summary = None
         spam_entries = []
         
         if request.params.get('report'):
             delta = h.timedelta_from_string(request.params.get('report'))
         else:
             delta = None
-
-        entries = feed_data.get_entries().order_by(model.FeedEntry.id.desc()).limit(30)
-        import operator
-        tmp = []
-        for x in entries:
-            tmp.append(x)
-        entries = sorted(tmp, cmp_updated)
         
+        log.debug("delta %s" % delta)
+
+        settings = meta.Session\
+                   .query(model.BayesFeedSetting)\
+                   .filter_by(user_id = c.rss_user.id, feed_id=feed_data.id).first()
+        if settings:
+            meta.Session.update(settings)
+            log.debug("settings.last_report (loaded): %s" % settings.last_report)
+            entries = feed_data.get_entries().filter(model.FeedEntry.updated > settings.last_report).order_by(model.FeedEntry.updated)
+        else:
+            entries = feed_data.get_entries().order_by(model.FeedEntry.updated.desc()).limit(30)
+
+            tmp = []
+            for x in entries:
+                tmp.append(x)
+            entries = sorted(tmp, cmp_updated)
+            
         for entry in entries:
-            log.debug(entry.updated)
             c.entry = entry
             c.entry.is_spam=guesser.is_spam(entry)
 
             if c.entry.is_spam and delta and entry.updated:
-                if not last_summary:
-                    last_summary = entry.updated
+                log.debug("%s %s" % (entry.updated, entry.title[:40]))
+                spam_entries.append(entry)
+
+                if not settings:
+                    settings = model.BayesFeedSetting()
+                    settings.user_id = c.rss_user.id
+                    settings.feed_id = feed_data.id
+                    meta.Session.add(settings)
+                    log.debug("settings.last_report (new): %s" % entry.updated)
+
+                if not settings.last_report:
                     log.debug("first: %s" % entry.updated)
+                    settings.last_report = entry.updated
                     
-                if last_summary - delta > entry.updated:
+                elif settings.last_report + delta < entry.updated:
+                    log.debug("next: %s" % entry.updated)
                     add_spam_report(feed, spam_entries)
                     
-                    last_summary = entry.updated
+                    settings.last_report = entry.updated
                     spam_entries = []
-                    log.debug("next: %s" % entry.updated)
             
-                spam_entries.append(entry)
                 
             else:                
                 if c.entry.is_spam:
@@ -241,12 +265,15 @@ class BayesController(BaseController):
                 feed.add_item(title=titel,
                               link=entry.link,
                               description=render('bayes/rss_summary.mako'),
-                              unique_id=entry.uid) #entry.summary
+                              unique_id=entry.uid,
+                              pubdate=entry.updated) #entry.summary
 
 
+        log.debug("len(spam_entries) = %s" % len(spam_entries))
+        meta.Session.commit()
+        
         if len(spam_entries) > 0:
             add_spam_report(feed, spam_entries)
-            log.debug("last: %s" % entry.updated)
     
 
         response.content_type = 'application/atom+xml'

@@ -8,6 +8,7 @@ from feed import Feed, feeds_table
 from feed_entries import FeedEntry, feed_entries_table
 from classification import Classification, classifications_table
 from stopword import Stopword, stopwords_table
+from bayes_feed_setting import BayesFeedSetting, bayes_feed_settings_table
 
 def init_model(engine):
     """Call me before using any of the tables or classes in the model"""
@@ -35,4 +36,5 @@ orm.mapper(Classification, classifications_table, properties = {
     })
 
 orm.mapper(Stopword, stopwords_table)
+orm.mapper(BayesFeedSetting, bayes_feed_settings_table)
 

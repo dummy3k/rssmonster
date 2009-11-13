@@ -38,7 +38,7 @@ class FeedController(BaseController):
 
         c.feed = meta.find(model.Feed, id)
         guesser = bayes.Guesser(c.feed, c.user)
-        query = c.feed.get_entries().order_by(model.FeedEntry.id.desc()) #.limit(30)
+        query = c.feed.get_entries().order_by(model.FeedEntry.updated.desc()) #.limit(30)
 
         from webhelpers import paginate
         c.page = paginate.Page(query, page)
