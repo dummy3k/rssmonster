@@ -73,7 +73,7 @@ class Reporter():
         if not self.last_report:
             self.last_report = entry.updated
 
-        if entry.updated > self.last_report + self.delta and len(self.spam_entries):
+        if entry.updated and entry.updated > self.last_report + self.delta and len(self.spam_entries):
             self.last_last_report = self.last_report
             self.last_report = entry.updated
             self.offset_queue.push(self.spam_entries[0])
