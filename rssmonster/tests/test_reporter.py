@@ -128,3 +128,46 @@ class TestReporterInitial(TestController):
             self.reporter.last_last_report)
 
 
+class TestReporterQueued(TestController):
+    def setUp(self):
+        self.reporter = Reporter(Mock(), None, None, timedelta(minutes=5), Mock(), Mock(),
+            max_entries=5)
+
+    def test_reality(self):
+        self.assertEqual(None, self.reporter.offset_id)
+
+        self.reporter.add_item(create_mock({'updated':datetime(2009,11,14, 12,12), 'id':1}), False)
+        self.assertEqual(1, self.reporter.offset_id)
+
+        self.reporter.add_item(create_mock({'updated':datetime(2009,11,14, 12,12), 'id':2}), False)
+        self.assertEqual(1, self.reporter.offset_id)
+
+        self.reporter.add_item(create_mock({'updated':datetime(2009,11,14, 12,12), 'id':3}), False)
+        self.assertEqual(1, self.reporter.offset_id)
+
+        self.reporter.add_item(create_mock({'updated':datetime(2009,11,14, 12,12), 'id':4}), False)
+        self.assertEqual(1, self.reporter.offset_id)
+
+        self.reporter.add_item(create_mock({'updated':datetime(2009,11,14, 12,12), 'id':5}), False)
+        self.assertEqual(1, self.reporter.offset_id)
+
+        self.reporter.add_item(create_mock({'updated':datetime(2009,11,14, 12,12), 'id':6}), False)
+        self.assertEqual(2, self.reporter.offset_id)
+
+        self.reporter.add_item(create_mock({'updated':datetime(2009,11,14, 12,12), 'id':7}), False)
+        self.assertEqual(3, self.reporter.offset_id)
+
+        self.reporter.add_item(create_mock({'updated':datetime(2009,11,14, 12,12), 'id':8}), False)
+        self.assertEqual(4, self.reporter.offset_id)
+
+        self.reporter.add_item(create_mock({'updated':datetime(2009,11,14, 12,12), 'id':9}), False)
+        self.assertEqual(5, self.reporter.offset_id)
+
+        self.reporter.add_item(create_mock({'updated':datetime(2009,11,14, 12,12), 'id':10}), False)
+        self.assertEqual(6, self.reporter.offset_id)
+
+        self.reporter.add_item(create_mock({'updated':datetime(2009,11,14, 12,12), 'id':11}), False)
+        self.assertEqual(7, self.reporter.offset_id)
+
+
+

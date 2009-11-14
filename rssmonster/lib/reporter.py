@@ -1,3 +1,4 @@
+#from Queue import Queue
 import logging
 log = logging.getLogger(__name__)
 
@@ -13,6 +14,8 @@ class Reporter():
         self.add_ham = add_ham
         self.report_spam = report_spam
         self.offset_id = None
+        self.entry_queue = []
+        self.max_entries = max_entries
 
     def add_item_bak(self, title, link, description, is_spam,
                  author_email=None, author_name=None, author_link=None,
@@ -22,6 +25,12 @@ class Reporter():
         pass
 
     def add_item(self, entry, is_spam):
+        self.entry_queue.append(entry)
+        if len(self.entry_queue) > self.max_entries:
+            self.entry_queue = self.entry_queue[1:] #pop
+
+        self.offset_id = self.entry_queue[0].id
+
         if not self.last_report:
             self.last_report = entry.updated
 
