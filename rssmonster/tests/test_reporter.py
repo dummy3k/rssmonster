@@ -174,6 +174,7 @@ class TestReporterQueued(TestController):
 
         self.reporter.add_item(create_mock({'updated':datetime(2009,11,14, 12,01), 'id':1}), True)
         self.assertEqual(1, self.reporter.offset_id())
+        self.assertEqual(0, len(self.reporter.entry_queue))
 
         self.reporter.add_item(create_mock({'updated':datetime(2009,11,14, 12,02), 'id':2}), False)
         self.assertEqual(1, self.reporter.offset_id())
