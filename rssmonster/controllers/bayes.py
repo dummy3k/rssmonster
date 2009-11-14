@@ -30,7 +30,10 @@ def add_spam_report(feed, spam_entries):
     c.baseurl = config['base_url']
 
     hasher = md5()
-    #~ for entry in spam_entries:
+    updated = None
+    for entry in spam_entries:
+        if entry.updated and (not updated or entry.updated > updated):
+            updated = entry.updated
         #~ hasher.update(entry.uid)
 
     ts = spam_entries[len(spam_entries)-1].updated
@@ -41,7 +44,7 @@ def add_spam_report(feed, spam_entries):
                   link="http://example.com",
                   description=render('bayes/spam_report.mako'),
                   unique_id=hasher.hexdigest(),
-                  pubdate=ts)
+                  pubdate=updated)
 
 
 def cmp_updated(x,y):
