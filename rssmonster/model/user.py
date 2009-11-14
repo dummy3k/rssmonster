@@ -3,6 +3,9 @@ import meta
 import hashlib
 from datetime import datetime
 
+import logging
+log = logging.getLogger(__name__)
+
 users_table = Table('users', meta.metadata,
     Column('id', Integer, primary_key=True),
     Column('name', String(100)),
@@ -49,7 +52,7 @@ class User(object):
 
     def get_bayes_feed_setting(self, feed_id):
         for s in self.bayes_feed_settings:
-            if s.feed_id == feed_id:
+            if int(s.feed_id) == int(feed_id):
                 return s
 
         from bayes_feed_setting import BayesFeedSetting

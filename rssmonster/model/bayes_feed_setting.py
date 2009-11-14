@@ -22,6 +22,6 @@ class BayesFeedSetting(object):
     __str__ = __unicode__
 
     def __repr__(self):
-        return u"<BayesFeedSetting(%s)>" % self.id
+        return u"<BayesFeedSetting(id=%s, feed_id=%s, summarize_at=%s)>" % (self.id, self.feed_id, self.summarize_at)
 
 

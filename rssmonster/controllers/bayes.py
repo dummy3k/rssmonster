@@ -187,6 +187,16 @@ class BayesController(BaseController):
 
     def mixed_rss(self, user_id, id):
         c.rss_user = meta.find(model.User, user_id)
+        settings = c.rss_user.get_bayes_feed_setting(id)
+        log.debug("settings: %s" % settings)
+        log.debug("settings.summarize_at: %s" % settings.summarize_at)
+        if settings.summarize_at:
+            return self.mixed_rss_with_report(user_id, id)
+
+        return self.__mixed_rss__(user_id, id)
+
+    def __mixed_rss__(self, user_id, id):
+        c.rss_user = meta.find(model.User, user_id)
         log.debug("c.rss_user: %s" % c.rss_user)
         feed_data = meta.find(model.Feed, id)
         log.debug("feed_data.id %s" % feed_data.id)
@@ -205,77 +215,25 @@ class BayesController(BaseController):
         log.debug('c.base_url: %s' % c.base_url)
 
         guesser = Guesser(feed_data, c.rss_user)
-        spam_entries = []
-
-        if request.params.get('report'):
-            delta = h.timedelta_from_string(request.params.get('report'))
-        else:
-            delta = None
-
-        log.debug("delta %s" % delta)
-
-        settings = meta.Session\
-                   .query(model.BayesFeedSetting)\
-                   .filter_by(user_id = c.rss_user.id, feed_id=feed_data.id).first()
-        if settings:
-            meta.Session.update(settings)
-            log.debug("settings.next_report (loaded): %s" % settings.next_report)
-            entries = feed_data.get_entries().filter(model.FeedEntry.updated > settings.next_report).order_by(model.FeedEntry.updated)
-        else:
-            entries = feed_data.get_entries().order_by(model.FeedEntry.updated.desc()).limit(30)
-
-            tmp = []
-            for x in entries:
-                tmp.append(x)
-            entries = sorted(tmp, cmp_updated)
+        entries = feed_data.get_entries().order_by(model.FeedEntry.updated.desc()).limit(30)
 
         for entry in entries:
             c.entry = entry
             c.entry.is_spam=guesser.is_spam(entry)
 
-            if c.entry.is_spam and delta and entry.updated:
-                log.debug("%s %s" % (entry.updated, entry.title[:40]))
-                spam_entries.append(entry)
-
-                if not settings:
-                    settings = model.BayesFeedSetting()
-                    settings.user_id = c.rss_user.id
-                    settings.feed_id = feed_data.id
-                    meta.Session.add(settings)
-                    log.debug("settings.next_report (new): %s" % entry.updated)
-
-                if not settings.next_report:
-                    log.debug("first: %s" % entry.updated)
-                    settings.next_report = entry.updated
-
-                elif settings.next_report + delta < entry.updated:
-                    log.debug("next: %s" % entry.updated)
-                    add_spam_report(feed, spam_entries)
-
-                    settings.next_report = entry.updated
-                    spam_entries = []
-
-
+            if c.entry.is_spam:
+                titel = "[SPAM] %s" % entry.title
             else:
-                if c.entry.is_spam:
-                    titel = "[SPAM] %s" % entry.title
-                else:
-                    titel = entry.title
+                titel = entry.title
 
-                feed.add_item(title=titel,
-                              link=entry.link,
-                              description=render('bayes/rss_summary.mako'),
-                              unique_id=entry.uid,
-                              pubdate=entry.updated) #entry.summary
+            feed.add_item(title=titel,
+                          link=entry.link,
+                          description=render('bayes/rss_summary.mako'),
+                          unique_id=entry.uid,
+                          pubdate=entry.updated) #entry.summary
 
 
-        log.debug("len(spam_entries) = %s" % len(spam_entries))
-        meta.Session.commit()
-
-        if len(spam_entries) > 0:
-            add_spam_report(feed, spam_entries)
-
-
+        #meta.Session.commit()
         response.content_type = 'application/atom+xml'
         return feed.writeString('utf-8')
 
