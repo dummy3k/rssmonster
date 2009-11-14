@@ -2,22 +2,6 @@
 import logging
 log = logging.getLogger(__name__)
 
-class HamEntry():
-    def __init__(self, entry):
-        self.type = 'ham'
-        self.entry = entry
-        self.offset_id = entry.id
-
-class SpamEntry():
-    def __init__(self):
-        self.type = 'spam'
-        self.entries = []
-        self.offset_id = None
-
-    def add(self, entry):
-        self.offset_id = entry.id
-        self.entries.append(entry)
-
 def last(array):
     return array[len(array)-1]
 
@@ -85,16 +69,14 @@ class Reporter():
             self.last_report = entry.updated
             self.offset_queue.push(self.spam_entries[0])
 
-            spe = SpamEntry()
-            spe.entries = self.spam_entries
-            self.entry_queue.push(spe)
+            self.entry_queue.push({'type':'spam', 'entries':self.spam_entries})
             self.spam_entries = []
 
         if not is_spam:
             self.add_ham()
 
             self.offset_queue.push(entry)
-            self.entry_queue.push(HamEntry(entry))
+            self.entry_queue.push({'type':'ham', 'entry':entry})
             return
 
         if entry.updated < self.last_report + self.delta:
