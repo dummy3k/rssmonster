@@ -7,8 +7,7 @@ bayes_feed_settings_table = Table('bayes_feed_settings', meta.metadata,
     Column('id', Integer, primary_key=True),
     Column('feed_id', Integer, ForeignKey('feeds.id')),
     Column('user_id', Integer, ForeignKey('users.id')),
-    Column('next_report', DateTime),
-    Column('last_report', DateTime),
+    Column('report_offset', Integer),
     Column('summarize_at', String(30)),
     UniqueConstraint('feed_id', 'user_id')
 )
@@ -16,7 +15,7 @@ bayes_feed_settings_table = Table('bayes_feed_settings', meta.metadata,
 class BayesFeedSetting(object):
     def __init__(self):
         self.name = 'BayesFeedSetting'
-        
+
     def __unicode__(self):
         return self.__repr__()
 

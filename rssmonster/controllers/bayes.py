@@ -25,14 +25,14 @@ def __relevant__(entry):
 def add_spam_report(feed, spam_entries):
     if len(spam_entries) == 0:
         return
-        
+
     c.entries = spam_entries
     c.baseurl = config['base_url']
-    
+
     hasher = md5()
     #~ for entry in spam_entries:
         #~ hasher.update(entry.uid)
-    
+
     ts = spam_entries[len(spam_entries)-1].updated
     title="RssMonster - Spam Summary - %s" % spam_entries[0].updated
     hasher.update(title)
@@ -42,7 +42,7 @@ def add_spam_report(feed, spam_entries):
                   description=render('bayes/spam_report.mako'),
                   unique_id=hasher.hexdigest(),
                   pubdate=ts)
-                  
+
 
 def cmp_updated(x,y):
     if not x.updated and not y.updated:
@@ -57,7 +57,7 @@ def cmp_updated(x,y):
         return 0
     else: # x<y
         return -1
-    
+
 
 class BayesController(BaseController):
 
@@ -66,24 +66,24 @@ class BayesController(BaseController):
 
         if not c.user:
             return redirect_to(controller='login', action='signin', id=None, return_to=h.url_for())
-            
-        entry = meta.find(model.FeedEntry, id) 
+
+        entry = meta.find(model.FeedEntry, id)
         feed = meta.find(model.Feed, entry.feed_id)
         guesser = Guesser(feed, c.user)
         return self.__mark_as__(entry, 'spam', guesser)
-        
+
     def mark_as_ham(self, id):
         if not c.user:
             return redirect_to(controller='login', action='signin', id=None, return_to=h.url_for())
-            
-        entry = meta.find(model.FeedEntry, id) 
+
+        entry = meta.find(model.FeedEntry, id)
         feed = meta.find(model.Feed, entry.feed_id)
         guesser = Guesser(feed, c.user)
         return self.__mark_as__(entry, 'ham', guesser)
 
     def __mark_as__(self, entry, pool, guesser, force=False):
         """ when forced the entry is updated even if the db says it is already """
-        
+
         log.debug("entry.id: %s" % entry.id)
         classy = meta.Session\
                 .query(model.Classification)\
@@ -95,23 +95,23 @@ class BayesController(BaseController):
             classy.entry_id = entry.id
             classy.pool = pool
             meta.Session.save(classy)
-            
+
             untrain_id = None
         else:
             if classy.pool == pool and not force:
                 h.flash("entry was already classified as %s" % pool)
                 return h.go_back(h.url_for(controller='feed', action='show_feed', id=entry.feed_id))
                 #return redirect_to(controller='feed', action='show_feed', id=entry.feed_id)
-            
+
             classy.pool = pool
             meta.Session.update(classy)
 
             untrain_id = entry.id
-            
+
         meta.Session.commit()
 
         guesser.trainer.train(pool, __relevant__(entry), entry.id)
-        
+
         if pool == 'spam':
             other_pool = 'ham'
         elif pool == 'ham':
@@ -119,7 +119,7 @@ class BayesController(BaseController):
         else:
             raise "bad pool"
 
-#        if untraind_id:            
+#        if untraind_id:
 #            guesser.trainer.untrain(other_pool, __relevant__(entry), untrain_id)
         guesser.save()
 
@@ -131,8 +131,8 @@ class BayesController(BaseController):
         if not c.user:
             return redirect_to(controller='login', action='signin', id=None, return_to=h.url_for())
 
-        c.entry = meta.find(model.FeedEntry, id) 
-        
+        c.entry = meta.find(model.FeedEntry, id)
+
         feed = meta.find(model.Feed, c.entry.feed_id)
         c.feed = feed
         guesser = Guesser(feed, c.user)
@@ -140,7 +140,7 @@ class BayesController(BaseController):
 
         log.debug("guess: %s" % guess)
         log.debug("c.entry.title: %s" % c.entry.title)
-        
+
         c.score = str(guess)
         c.score = guesser.guess(c.entry)
         c.pool = guesser.trainer.poolData('spam')
@@ -154,11 +154,11 @@ class BayesController(BaseController):
         c.pool_data_ham = guesser.trainer.poolData('ham')
         c.pool_data_ham.sort(key=operator.itemgetter(1))
         c.pool_data_ham.reverse()
-        
+
         c.tokens = set(guesser.trainer.getTokens(__relevant__(c.entry)))
-        
+
         return render('bayes/score.mako')
-        
+
     def show_guesser(self, id):
         if not c.user:
             return redirect_to(controller='login', action='signin', id=None, return_to=h.url_for())
@@ -175,22 +175,22 @@ class BayesController(BaseController):
         c.pool_data_ham = guesser.trainer.poolData('ham')
         c.pool_data_ham.sort(key=operator.itemgetter(1))
         c.pool_data_ham.reverse()
-        
+
         c.actions = [{'link':h.url_for(controller='feed', action='show_feed', id=id),
                         'text':'Feed Details'}]
-                        
+
         c.stopwords = meta.Session\
             .query(model.Stopword)\
             .filter_by(feed_id=id, user_id=c.user.id)
 
         return render('bayes/guesser.mako')
-    
+
     def mixed_rss(self, user_id, id):
         c.rss_user = meta.find(model.User, user_id)
         log.debug("c.rss_user: %s" % c.rss_user)
         feed_data = meta.find(model.Feed, id)
         log.debug("feed_data.id %s" % feed_data.id)
-        
+
         import feed
         fetch_result = feed_data.fetch()
 
@@ -206,12 +206,12 @@ class BayesController(BaseController):
 
         guesser = Guesser(feed_data, c.rss_user)
         spam_entries = []
-        
+
         if request.params.get('report'):
             delta = h.timedelta_from_string(request.params.get('report'))
         else:
             delta = None
-        
+
         log.debug("delta %s" % delta)
 
         settings = meta.Session\
@@ -228,7 +228,7 @@ class BayesController(BaseController):
             for x in entries:
                 tmp.append(x)
             entries = sorted(tmp, cmp_updated)
-            
+
         for entry in entries:
             c.entry = entry
             c.entry.is_spam=guesser.is_spam(entry)
@@ -247,16 +247,16 @@ class BayesController(BaseController):
                 if not settings.next_report:
                     log.debug("first: %s" % entry.updated)
                     settings.next_report = entry.updated
-                    
+
                 elif settings.next_report + delta < entry.updated:
                     log.debug("next: %s" % entry.updated)
                     add_spam_report(feed, spam_entries)
-                    
+
                     settings.next_report = entry.updated
                     spam_entries = []
-            
-                
-            else:                
+
+
+            else:
                 if c.entry.is_spam:
                     titel = "[SPAM] %s" % entry.title
                 else:
@@ -271,20 +271,20 @@ class BayesController(BaseController):
 
         log.debug("len(spam_entries) = %s" % len(spam_entries))
         meta.Session.commit()
-        
+
         if len(spam_entries) > 0:
             add_spam_report(feed, spam_entries)
-    
+
 
         response.content_type = 'application/atom+xml'
         return feed.writeString('utf-8')
-        
+
     def mixed_rss_with_report(self, user_id, id):
         c.rss_user = meta.find(model.User, user_id)
         log.debug("c.rss_user: %s" % c.rss_user)
         feed_data = meta.find(model.Feed, id)
         log.debug("feed_data.id %s" % feed_data.id)
-        
+
         import feed
         fetch_result = feed_data.fetch()
 
@@ -299,119 +299,139 @@ class BayesController(BaseController):
         log.debug('c.base_url: %s' % c.base_url)
 
         guesser = Guesser(feed_data, c.rss_user)
-        spam_entries = []
-
-        #~ settings = meta.Session\
-                   #~ .query(model.BayesFeedSetting)\
-                   #~ .filter_by(user_id = c.rss_user.id, feed_id=feed_data.id).first()
         settings = c.rss_user.get_bayes_feed_setting(feed_data.id)
+        meta.Session.update(settings)
         delta = h.timedelta_from_string(settings.summarize_at)
         log.debug("delta %s" % delta)
 
-        #if not settings.next_report and not settings.last_report:
-            #log.warn("no report dates (both), reading recent entries...")
-            #entries = feed_data.get_entries().order_by(model.FeedEntry.updated.desc()).limit(30)
+        if not settings.report_offset:
+            entries = feed_data.get_entries().order_by(model.FeedEntry.id).all()
+            log.warn("no report_offset available, read %s entries" % len(entries))
+        else:
+            entries = feed_data.get_entries().filter(model.FeedEntry.id >= settings.report_offset).order_by(model.FeedEntry.id).all()
 
-            #tmp = []
-            #for x in entries:
-                #tmp.append(x)
-            #entries = sorted(tmp, cmp_updated)
-            
-            #settings.last_report = entries[0].updated - delta
-            #settings.next_report = entries[0].updated + delta
-            
-        ##~ elif not settings.last_report:
-            ##~ log.warn("no report dates (last), reading with other date")
-            ##~ entries = feed_data.get_entries()\
-                        ##~ .filter(model.FeedEntry.updated > settings.next_report-delta)\
-                        ##~ .order_by(model.FeedEntry.updated)
-
-        #else:
-            #entries = feed_data.get_entries()\
-                        #.filter(model.FeedEntry.updated > settings.last_report)\
-                        #.order_by(model.FeedEntry.updated)
-            
-
-        entries = feed_data.get_entries()\
-                    .order_by(model.FeedEntry.updated.desc())\
-                    .limit(1000)
-        
-#            settings.next_report = datetime(MINYEAR, 1, 1)
-
-        log.debug("settings.next_report: %s" % settings.next_report)
-        log.debug("settings.last_report: %s" % settings.last_report)
-        if not settings:
-            h.flash("no intervall set")
-            h.redirect_to(controller='feed', action='show_feed', id=feed_data.id)
-            
-        meta.Session.update(settings)
-
-
-        reported = False
-        cnt_surpressed = 0
-        cnt_added = 0
-        #max_entry_date = None
+        from rssmonster.lib.reporter import Reporter
+        reporter = Reporter(None, None, delta, 30)
         for entry in entries:
-            c.entry = entry
-            c.entry.is_spam=guesser.is_spam(entry)
+            reporter.add_item(entry, guesser.is_spam(entry))
 
-            if not c.entry.is_spam or not entry.updated:
-                feed.add_item(title=entry.title,
-                              link=entry.link,
+        for entry_box in reporter.entry_queue:
+            #log.debug("entry_box: %s" % entry_box)
+
+            if entry_box['type'] == 'ham':
+                c.entry = entry_box['entry']
+                c.entry.is_spam=guesser.is_spam(c.entry)
+                feed.add_item(title=c.entry.title,
+                              link=c.entry.link,
                               description=render('bayes/rss_summary.mako'),
-                              unique_id=entry.uid,
-                              pubdate=entry.updated) #entry.summary
+                              unique_id=c.entry.uid,
+                              pubdate=c.entry.updated)
 
-            elif entry.updated < settings.last_report:
-                pass
-            elif entry.updated < settings.last_report:
-                #log.debug("add: %s %s" % (entry.updated, entry.title[:40]))
-                cnt_added += 1
-                spam_entries.append(entry)
+            elif entry_box['type'] == 'spam':
+                add_spam_report(feed, entry_box['entries'])
 
-            if entry.updated > settings.next_report:
-                if not reported:
-                    log.debug("report: %s" % len(spam_entries))
-                    add_spam_report(feed, spam_entries)
-                    reported = True
-
-                    settings.last_report = entry.updated
-                    settings.next_report = entry.updated + delta
-                    spam_entries = []
-
-                if c.entry.is_spam:
-                    #log.debug("suppress: %s %s" % (entry.updated, entry.title[:40]))
-                    cnt_surpressed += 1
-#~ 
-                #~ else:
-                #~ #log.debug("suppress: %s %s" % (entry.updated, entry.title[:40]))
-                    #~ cnt_surpressed += 1
-                
-                    #log.debug("next: %s" % entry.updated)
-#                log.debug("report: %s %s" % (entry.updated, entry.title[:40]))
-#                spam_entries.append(entry)
-#        log.debug("len(spam_entries) = %s" % len(spam_entries))
+        settings.report_offset = reporter.offset_id()
+        log.debug("settings.report_offset: %s" % settings.report_offset)
         meta.Session.commit()
-        
-        #~ if len(spam_entries) > 0:
-            #~ log.debug("report (last): %s" % len(spam_entries))
-            #~ add_spam_report(feed, spam_entries)
-            #~ reported = True
-#~ 
-            #~ settings.last_report = settings.next_report
-            #~ settings.next_report = entry.updated + delta
-    
-
-        log.debug("cnt_added: %s" % cnt_added)
-        log.debug("cnt_surpressed: %s" % cnt_surpressed)
-        log.debug("last entry.updated: %s" % entry.updated)
-        
-        response.content_type = 'application/atom+xml'
         return feed.writeString('utf-8')
+
+        ##if not settings.next_report and not settings.last_report:
+            ##log.warn("no report dates (both), reading recent entries...")
+            ##entries = feed_data.get_entries().order_by(model.FeedEntry.updated.desc()).limit(30)
+
+            ##tmp = []
+            ##for x in entries:
+                ##tmp.append(x)
+            ##entries = sorted(tmp, cmp_updated)
+
+            ##settings.last_report = entries[0].updated - delta
+            ##settings.next_report = entries[0].updated + delta
+
+        ###~ elif not settings.last_report:
+            ###~ log.warn("no report dates (last), reading with other date")
+            ###~ entries = feed_data.get_entries()\
+                        ###~ .filter(model.FeedEntry.updated > settings.next_report-delta)\
+                        ###~ .order_by(model.FeedEntry.updated)
+
+        ##else:
+            ##entries = feed_data.get_entries()\
+                        ##.filter(model.FeedEntry.updated > settings.last_report)\
+                        ##.order_by(model.FeedEntry.updated)
+
+
+        #entries = feed_data.get_entries()\
+                    #.order_by(model.FeedEntry.updated.desc())\
+                    #.limit(1000)
+
+##            settings.next_report = datetime(MINYEAR, 1, 1)
+
+        #log.debug("settings.next_report: %s" % settings.next_report)
+        #log.debug("settings.last_report: %s" % settings.last_report)
+        #if not settings:
+            #h.flash("no intervall set")
+            #h.redirect_to(controller='feed', action='show_feed', id=feed_data.id)
+
+
+
+        #reported = False
+        #cnt_surpressed = 0
+        #cnt_added = 0
+        ##max_entry_date = None
+        #for entry in entries:
+            #c.entry = entry
+            #c.entry.is_spam=guesser.is_spam(entry)
+
+            #if not c.entry.is_spam or not entry.updated:
+
+            #elif entry.updated < settings.last_report:
+                #pass
+            #elif entry.updated < settings.last_report:
+                ##log.debug("add: %s %s" % (entry.updated, entry.title[:40]))
+                #cnt_added += 1
+                #spam_entries.append(entry)
+
+            #if entry.updated > settings.next_report:
+                #if not reported:
+                    #log.debug("report: %s" % len(spam_entries))
+                    #add_spam_report(feed, spam_entries)
+                    #reported = True
+
+                    #settings.last_report = entry.updated
+                    #settings.next_report = entry.updated + delta
+                    #spam_entries = []
+
+                #if c.entry.is_spam:
+                    ##log.debug("suppress: %s %s" % (entry.updated, entry.title[:40]))
+                    #cnt_surpressed += 1
+##~
+                ##~ else:
+                ##~ #log.debug("suppress: %s %s" % (entry.updated, entry.title[:40]))
+                    ##~ cnt_surpressed += 1
+
+                    ##log.debug("next: %s" % entry.updated)
+##                log.debug("report: %s %s" % (entry.updated, entry.title[:40]))
+##                spam_entries.append(entry)
+##        log.debug("len(spam_entries) = %s" % len(spam_entries))
+        #meta.Session.commit()
+
+        ##~ if len(spam_entries) > 0:
+            ##~ log.debug("report (last): %s" % len(spam_entries))
+            ##~ add_spam_report(feed, spam_entries)
+            ##~ reported = True
+##~
+            ##~ settings.last_report = settings.next_report
+            ##~ settings.next_report = entry.updated + delta
+
+
+        #log.debug("cnt_added: %s" % cnt_added)
+        #log.debug("cnt_surpressed: %s" % cnt_surpressed)
+        #log.debug("last entry.updated: %s" % entry.updated)
+
+        #response.content_type = 'application/atom+xml'
 
     def internal_rss_report(self):
         pass
-        
+
     def redo(self, id):
         if not c.user:
             return redirect_to(controller='login', action='signin', id=None, return_to=h.url_for())
@@ -442,15 +462,15 @@ class BayesController(BaseController):
 
         guesser.save()
         log.debug("FOOOOOO")
-        
-        
+
+
         if needles_cnt > 0:
             h.flash("%d entries were needlessly trained (total: %s)" % (needles_cnt, cnt))
         else:
             h.flash("learned %s entries" % cnt)
-        
+
         return h.go_back()
-        
+
     def mark_stopword(self, id, word):
         if not c.user:
             return redirect_to(controller='login', action='signin', id=None, return_to=h.url_for())
@@ -460,7 +480,7 @@ class BayesController(BaseController):
         w.feed_id = id
         w.word = word
         meta.Session.save(w)
-        
+
         from sqlalchemy.exceptions import IntegrityError
         try:
             meta.Session.commit()
@@ -468,9 +488,9 @@ class BayesController(BaseController):
         except IntegrityError:
             h.flash("i already know that '%s' is a stop word." % word)
             meta.Session.rollback()
-        
+
         return self.redo(id)
-        
+
     def unmark_stopword(self, id, word):
         if not c.user:
             return redirect_to(controller='login', action='signin', id=None, return_to=h.url_for())
@@ -479,15 +499,15 @@ class BayesController(BaseController):
         if not w:
             h.flash("can't remove '%s', because it is not on the list." % word)
 
-        log.debug("w: %s" % w)            
+        log.debug("w: %s" % w)
         meta.Session.delete(w)
-        
+
         from sqlalchemy.exceptions import IntegrityError
         meta.Session.commit()
         h.flash("removed '%s' from stopwords list." % word)
-        
+
         return self.redo(id)
-        
+
     def change_intervall(self, id):
         word = request.params.get('word')
         settings = meta.Session\
@@ -505,4 +525,4 @@ class BayesController(BaseController):
         meta.Session.commit()
         h.flash('changed intervall to %s' % word)
         return h.go_back()
-        
+

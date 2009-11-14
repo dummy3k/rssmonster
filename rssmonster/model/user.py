@@ -22,7 +22,7 @@ class User(object):
             return hashlib.md5(self.email.strip().lower()).hexdigest()
         else:
             return hashlib.md5(self.openid.strip().lower()).hexdigest()
-        
+
     def getDisplayName(self):
         if self.name:
             return self.name
@@ -41,18 +41,22 @@ class User(object):
     def allow_edit(self, some_thing):
         if not some_thing:
             raise Exception('something isnt anything')
-            
+
 #        if type(some_thing) is Statement:
 #            return (some_thing.userid == self.id)
-        
+
         raise Exception('unknown type "%s"' % some_thing)
-        
+
     def get_bayes_feed_setting(self, feed_id):
         for s in self.bayes_feed_settings:
             if s.feed_id == feed_id:
                 return s
-        
+
         from bayes_feed_setting import BayesFeedSetting
-        return BayesFeedSetting()
-                
+        retval = BayesFeedSetting()
+        #~ retval.user_id = self.id
+        #~ retval.feed_id = feed_id
+        #~ meta.Session.Add(retval)
+        return retval
+
         #return h.find(lambda x:x.feed_id==2, c.user.bayes_feed_settings)

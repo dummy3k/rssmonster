@@ -38,7 +38,7 @@ class Feed(object):
     def fetch(self):
         if config['offline'] == 'True':
             return
-    
+
         import feedparser
 
         rss_feed = feedparser.parse(self.url)
@@ -49,12 +49,12 @@ class Feed(object):
 	        log.error("no entries while fetching '%s'" % self.title)
 	        from pylons.controllers.util import abort
 	        abort(503)
-	        
+
         if 'title' in rss_feed.feed:
 	        self.title = rss_feed.feed.title
         else:
             log.warn("feed %s has no title" % self.id)
-            
+
         if 'subtitle' in rss_feed.feed:
 	        self.subtitle = rss_feed.feed.subtitle
         else:
@@ -66,7 +66,7 @@ class Feed(object):
             self.language = rss_feed.feed.language
         if 'image' in rss_feed.feed:
             self.image = rss_feed.feed.image.href
-            
+
         if 'link' in rss_feed.feed:
 	        self.link = rss_feed.feed.link
         else:
@@ -97,34 +97,36 @@ class Feed(object):
                 is_new = True
             else:
                 is_new = False
-                
+
             #log.debug("entry: %s" % entry)
             feed_entry.feed_id = self.id
             feed_entry.uid = entry['id']
             feed_entry.title = entry['title']
             log.debug("entry['updated_parsed']['tm_hour'] = %s" % entry['updated_parsed'])
-            
+
             updated = entry['updated_parsed']
             feed_entry.updated = datetime(updated.tm_year, updated.tm_mon, updated.tm_mday, updated.tm_hour, updated.tm_min, updated.tm_sec)
             if feed_entry.updated > datetime.now():
                 log.warn("entry %s is ahead of time" % entry.id)
-                
+
             if 'summary' in entry:
                 feed_entry.summary = entry['summary']
             feed_entry.link = entry['link']
-            
+
             if is_new:
                 meta.Session.save(feed_entry)
                 retval['cnt_added']+=1
             else:
                 meta.Session.update(feed_entry)
-                
+
 
         meta.Session.commit()
-        
+
+        if retval['cnt_added'] > 0:
+            log.info("feed %s has %s new entries" %(self.title, retval['cnt_added']))
         if not retval['is_up2date']:
             log.warn("feed '%s' is not up to date" % self.title)
         return retval
-        
+
 
 

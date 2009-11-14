@@ -19,7 +19,7 @@ feed_entries_table = Table('feed_entries', meta.metadata,
 class FeedEntry(object):
     def __init__(self):
         pass
-                
+
     def __unicode__(self):
         return self.__repr__()
 
@@ -28,25 +28,25 @@ class FeedEntry(object):
             return hashlib.md5(self.email.strip().lower()).hexdigest()
         else:
             return hashlib.md5(self.openid.strip().lower()).hexdigest()
-        
+
     __str__ = __unicode__
 
     def __repr__(self):
-        return "<%s()>" % __name__
+        return "<%s(%s)>" % (__name__, self.id)
 
     def actions(self, return_to, user):
         import rssmonster.lib.helpers as h
-        
+
         ret = [
                 {'link':h.url_for(controller='/bayes', action='show_score', id=self.id),
                  'title':'Score'}
                 ]
-        
+
         from classification import Classification
         classy = meta.Session\
                 .query(Classification)\
                 .filter_by(user_id = user.id, entry_id=self.id).first()
-        
+
         if not classy:
             ret.append({'title':'Spam', 'link':h.url_for(controller='/bayes', action='mark_as_spam', id=self.id, return_to=return_to)})
             ret.append({'title':'Ham', 'link':h.url_for(controller='/bayes', action='mark_as_ham', id=self.id, return_to=return_to)})
@@ -56,17 +56,17 @@ class FeedEntry(object):
             ret.append({'title':'Spam', 'link':h.url_for(controller='/bayes', action='mark_as_spam', id=self.id, return_to=return_to)})
         else:
             raise "bad pool"
-        
+
         return ret
 
     def mark_actions(self, return_to, user):
         import rssmonster.lib.helpers as h
-        
+
         from classification import Classification
         classy = meta.Session\
                 .query(Classification)\
                 .filter_by(user_id = user.id, entry_id=self.id).first()
-        
+
         if not classy:
             ret.append({'title':'Spam', 'link':h.url_for(controller='/bayes', action='mark_as_spam', id=self.id, return_to=return_to)})
             ret.append({'title':'Ham', 'link':h.url_for(controller='/bayes', action='mark_as_ham', id=self.id, return_to=return_to)})
@@ -76,6 +76,6 @@ class FeedEntry(object):
             ret.append({'title':'Spam', 'link':h.url_for(controller='/bayes', action='mark_as_spam', id=self.id, return_to=return_to)})
         else:
             raise "bad pool"
-        
+
         return ret
 

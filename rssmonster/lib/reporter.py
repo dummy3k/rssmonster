@@ -41,13 +41,28 @@ class Reporter():
 
 
     def offset_id(self):
-        if len(self.spam_entries) > 0:
-            return self.spam_entries[0].id
-
+        #~ if len(self.spam_entries) > 0:
+            #~ return self.spam_entries[0].id
+#~
+        #~ retval = None
+        #~ for e in self.offset_queue.buffer:
+            #~ if not retval or retval > e.id:
+                #~ retval = e.id
+        #~ return retval
         retval = None
-        for e in self.offset_queue.buffer:
-            if not retval or retval > e.id:
-                retval = e.id
+        for e in self.entry_queue:
+            if e['type'] == 'ham':
+                if not retval or retval > e['entry'].id:
+                    retval = e['entry'].id
+            elif e['type'] == 'spam':
+                for ee in e['entries']:
+                    if not retval or retval > ee.id:
+                        retval = ee.id
+
+        for ee in self.spam_entries:
+            if not retval or retval > ee.id:
+                retval = ee.id
+
         return retval
 
     def add_item(self, entry, is_spam):
@@ -66,12 +81,9 @@ class Reporter():
             self.entry_queue.push({'type':'spam', 'entries':self.spam_entries})
             self.spam_entries = []
 
-        if not is_spam:
+        if is_spam:
+            self.spam_entries.append(entry)
+        else:
             self.offset_queue.push(entry)
             self.entry_queue.push({'type':'ham', 'entry':entry})
-            return
-
-        if entry.updated < self.last_report + self.delta:
-            self.spam_entries.append(entry)
-            return
 
