@@ -22,17 +22,12 @@ class RingBuffer():
         return self.buffer[index]
 
 class Reporter():
-    def __init__(self, feed, last_report, last_last_report, delta, add_ham,
-                report_spam, max_entries = 30):
+    def __init__(self, last_report, last_last_report, delta, max_entries = 30):
 
-        self.feed = feed
         self.delta = delta
         self.last_report = last_report
         self.last_last_report = last_last_report
         self.spam_entries = []
-        self.add_ham = add_ham
-        self.report_spam = report_spam
-        #self.offset_id = None
         self.entry_queue = RingBuffer(max_entries)
         self.offset_queue = RingBuffer(max_entries)
         self.max_entries = max_entries
@@ -64,7 +59,6 @@ class Reporter():
             self.last_report = entry.updated
 
         if entry.updated > self.last_report + self.delta:
-            self.report_spam()
             self.last_last_report = self.last_report
             self.last_report = entry.updated
             self.offset_queue.push(self.spam_entries[0])
@@ -73,8 +67,6 @@ class Reporter():
             self.spam_entries = []
 
         if not is_spam:
-            self.add_ham()
-
             self.offset_queue.push(entry)
             self.entry_queue.push({'type':'ham', 'entry':entry})
             return
