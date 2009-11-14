@@ -1,6 +1,6 @@
 import logging
 
-from datetime import datetime, timedelta
+from datetime import datetime, timedelta, MINYEAR
 from hashlib import md5
 from pylons import request, response, session, config, tmpl_context as c
 from pylons.controllers.util import abort, redirect_to
@@ -219,8 +219,8 @@ class BayesController(BaseController):
                    .filter_by(user_id = c.rss_user.id, feed_id=feed_data.id).first()
         if settings:
             meta.Session.update(settings)
-            log.debug("settings.last_report (loaded): %s" % settings.last_report)
-            entries = feed_data.get_entries().filter(model.FeedEntry.updated > settings.last_report).order_by(model.FeedEntry.updated)
+            log.debug("settings.next_report (loaded): %s" % settings.next_report)
+            entries = feed_data.get_entries().filter(model.FeedEntry.updated > settings.next_report).order_by(model.FeedEntry.updated)
         else:
             entries = feed_data.get_entries().order_by(model.FeedEntry.updated.desc()).limit(30)
 
@@ -242,17 +242,17 @@ class BayesController(BaseController):
                     settings.user_id = c.rss_user.id
                     settings.feed_id = feed_data.id
                     meta.Session.add(settings)
-                    log.debug("settings.last_report (new): %s" % entry.updated)
+                    log.debug("settings.next_report (new): %s" % entry.updated)
 
-                if not settings.last_report:
+                if not settings.next_report:
                     log.debug("first: %s" % entry.updated)
-                    settings.last_report = entry.updated
+                    settings.next_report = entry.updated
                     
-                elif settings.last_report + delta < entry.updated:
+                elif settings.next_report + delta < entry.updated:
                     log.debug("next: %s" % entry.updated)
                     add_spam_report(feed, spam_entries)
                     
-                    settings.last_report = entry.updated
+                    settings.next_report = entry.updated
                     spam_entries = []
             
                 
@@ -278,6 +278,139 @@ class BayesController(BaseController):
 
         response.content_type = 'application/atom+xml'
         return feed.writeString('utf-8')
+        
+    def mixed_rss_with_report(self, user_id, id):
+        c.rss_user = meta.find(model.User, user_id)
+        log.debug("c.rss_user: %s" % c.rss_user)
+        feed_data = meta.find(model.Feed, id)
+        log.debug("feed_data.id %s" % feed_data.id)
+        
+        import feed
+        fetch_result = feed_data.fetch()
+
+        feed = h.DefaultFeed(
+            title=feed_data.title,
+            link=feed_data.link,
+            description="TESTING",
+            language=feed_data.language,
+        )
+
+        c.base_url = config['base_url']
+        log.debug('c.base_url: %s' % c.base_url)
+
+        guesser = Guesser(feed_data, c.rss_user)
+        spam_entries = []
+
+        #~ settings = meta.Session\
+                   #~ .query(model.BayesFeedSetting)\
+                   #~ .filter_by(user_id = c.rss_user.id, feed_id=feed_data.id).first()
+        settings = c.rss_user.get_bayes_feed_setting(feed_data.id)
+        delta = h.timedelta_from_string(settings.summarize_at)
+        log.debug("delta %s" % delta)
+
+        #if not settings.next_report and not settings.last_report:
+            #log.warn("no report dates (both), reading recent entries...")
+            #entries = feed_data.get_entries().order_by(model.FeedEntry.updated.desc()).limit(30)
+
+            #tmp = []
+            #for x in entries:
+                #tmp.append(x)
+            #entries = sorted(tmp, cmp_updated)
+            
+            #settings.last_report = entries[0].updated - delta
+            #settings.next_report = entries[0].updated + delta
+            
+        ##~ elif not settings.last_report:
+            ##~ log.warn("no report dates (last), reading with other date")
+            ##~ entries = feed_data.get_entries()\
+                        ##~ .filter(model.FeedEntry.updated > settings.next_report-delta)\
+                        ##~ .order_by(model.FeedEntry.updated)
+
+        #else:
+            #entries = feed_data.get_entries()\
+                        #.filter(model.FeedEntry.updated > settings.last_report)\
+                        #.order_by(model.FeedEntry.updated)
+            
+
+        entries = feed_data.get_entries()\
+                    .order_by(model.FeedEntry.updated.desc())\
+                    .limit(1000)
+        
+#            settings.next_report = datetime(MINYEAR, 1, 1)
+
+        log.debug("settings.next_report: %s" % settings.next_report)
+        log.debug("settings.last_report: %s" % settings.last_report)
+        if not settings:
+            h.flash("no intervall set")
+            h.redirect_to(controller='feed', action='show_feed', id=feed_data.id)
+            
+        meta.Session.update(settings)
+
+
+        reported = False
+        cnt_surpressed = 0
+        cnt_added = 0
+        #max_entry_date = None
+        for entry in entries:
+            c.entry = entry
+            c.entry.is_spam=guesser.is_spam(entry)
+
+            if not c.entry.is_spam or not entry.updated:
+                feed.add_item(title=entry.title,
+                              link=entry.link,
+                              description=render('bayes/rss_summary.mako'),
+                              unique_id=entry.uid,
+                              pubdate=entry.updated) #entry.summary
+
+            elif entry.updated < settings.last_report:
+                pass
+            elif entry.updated < settings.last_report:
+                #log.debug("add: %s %s" % (entry.updated, entry.title[:40]))
+                cnt_added += 1
+                spam_entries.append(entry)
+
+            if entry.updated > settings.next_report:
+                if not reported:
+                    log.debug("report: %s" % len(spam_entries))
+                    add_spam_report(feed, spam_entries)
+                    reported = True
+
+                    settings.last_report = entry.updated
+                    settings.next_report = entry.updated + delta
+                    spam_entries = []
+
+                if c.entry.is_spam:
+                    #log.debug("suppress: %s %s" % (entry.updated, entry.title[:40]))
+                    cnt_surpressed += 1
+#~ 
+                #~ else:
+                #~ #log.debug("suppress: %s %s" % (entry.updated, entry.title[:40]))
+                    #~ cnt_surpressed += 1
+                
+                    #log.debug("next: %s" % entry.updated)
+#                log.debug("report: %s %s" % (entry.updated, entry.title[:40]))
+#                spam_entries.append(entry)
+#        log.debug("len(spam_entries) = %s" % len(spam_entries))
+        meta.Session.commit()
+        
+        #~ if len(spam_entries) > 0:
+            #~ log.debug("report (last): %s" % len(spam_entries))
+            #~ add_spam_report(feed, spam_entries)
+            #~ reported = True
+#~ 
+            #~ settings.last_report = settings.next_report
+            #~ settings.next_report = entry.updated + delta
+    
+
+        log.debug("cnt_added: %s" % cnt_added)
+        log.debug("cnt_surpressed: %s" % cnt_surpressed)
+        log.debug("last entry.updated: %s" % entry.updated)
+        
+        response.content_type = 'application/atom+xml'
+        return feed.writeString('utf-8')
+
+    def internal_rss_report(self):
+        pass
         
     def redo(self, id):
         if not c.user:
@@ -355,4 +488,21 @@ class BayesController(BaseController):
         
         return self.redo(id)
         
-    
+    def change_intervall(self, id):
+        word = request.params.get('word')
+        settings = meta.Session\
+                   .query(model.BayesFeedSetting)\
+                   .filter_by(user_id = c.user.id, feed_id=id).first()
+        if settings:
+            meta.Session.update(settings)
+        else:
+            settings = model.BayesFeedSetting()
+            settings.user_id = c.user.id
+            settings.feed_id = id
+            meta.Session.add(settings)
+
+        settings.summarize_at = word
+        meta.Session.commit()
+        h.flash('changed intervall to %s' % word)
+        return h.go_back()
+        

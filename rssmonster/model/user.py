@@ -37,8 +37,7 @@ class User(object):
 
     def updatelastlogin(self):
         self.last_login = datetime.now()
-        pass
-    
+
     def allow_edit(self, some_thing):
         if not some_thing:
             raise Exception('something isnt anything')
@@ -48,4 +47,12 @@ class User(object):
         
         raise Exception('unknown type "%s"' % some_thing)
         
+    def get_bayes_feed_setting(self, feed_id):
+        for s in self.bayes_feed_settings:
+            if s.feed_id == feed_id:
+                return s
         
+        from bayes_feed_setting import BayesFeedSetting
+        return BayesFeedSetting()
+                
+        #return h.find(lambda x:x.feed_id==2, c.user.bayes_feed_settings)

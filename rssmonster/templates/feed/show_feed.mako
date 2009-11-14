@@ -12,7 +12,16 @@
 <p>${c.feed.subtitle}</p>
 
 <%namespace name='feed_actions' file='feed_actions.mako' />
-${feed_actions.render(c.feed)}
+<p>${feed_actions.render(c.feed)}</p>
+
+<form action="${h.url_for(controller='bayes', action='change_intervall', id=c.feed.id)}">
+<p>
+	Report spam every:
+	<input type='text' name='word' value='${c.user.get_bayes_feed_setting(c.feed.id).summarize_at}'/>
+	<input type='hidden' name='return_to' value='${h.url_for()}'/>
+	<input type='submit' value='change'/>
+</p>
+</form>
 
 <p>${c.page.pager()}</p>
 

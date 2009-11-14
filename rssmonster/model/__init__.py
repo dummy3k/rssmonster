@@ -21,7 +21,10 @@ def init_model(engine):
     meta.Session.configure(bind=engine)
     meta.engine = engine
 
-orm.mapper(User, users_table)
+orm.mapper(User, users_table, properties = {
+    'bayes_feed_settings' : orm.relation(BayesFeedSetting),
+    })
+    
 orm.mapper(Feed, feeds_table, properties = {
     'entries' : orm.relation(FeedEntry),
     })

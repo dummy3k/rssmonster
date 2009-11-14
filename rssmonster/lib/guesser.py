@@ -1,4 +1,3 @@
-import logging
 import re
 from pylons import config
 from reverend.thomas import Bayes
@@ -6,6 +5,7 @@ from rssmonster.model import meta
 import helpers as h
 import rssmonster.model as model
 
+import logging
 log = logging.getLogger(__name__)
 
 def my_tokenize(msg, stopwords):

@@ -82,6 +82,9 @@ class FeedController(BaseController):
             },
             {'title':'Mixed',
              'link':h.url_for(controller='bayes', action='mixed_rss', user_id=c.user.id)
+            },
+            {'title':'Mixed with Report',
+             'link':h.url_for(controller='bayes', action='mixed_rss_with_report', user_id=c.user.id)
             }
         ]
         

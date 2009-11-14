@@ -127,3 +127,6 @@ def timedelta_from_string(s):
         return timedelta(days=int(m.group(1)*7))
 
 
+def find(f, data):
+    #x.feed_id==feed_data.id
+    reduce(lambda x,y:h.iif(f(x),x,y), c.rss_user.bayes_feed_settings)    
