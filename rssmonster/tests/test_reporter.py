@@ -67,65 +67,62 @@ class TestReporter(TestController):
             self.reporter.last_report)
 
 class TestReporterInitial(TestController):
-    pass
 
-    #~ def test_reality(self):
-        #~ self.reporter = Reporter(Mock(), None, None, timedelta(minutes=5), Mock(), Mock())
-        #~ #self.assertEqual(None, self.reporter.last_last_report)
-#~
-        #~ self.reporter.add_item(create_mock({'updated':datetime(2009,11,14, 12,01)}), True)
-        #~ self.reporter.add_item(create_mock({'updated':datetime(2009,11,14, 12,02)}), True)
-        #~ self.reporter.add_item(create_mock({'updated':datetime(2009,11,14, 12,03)}), True)
-        #~ self.reporter.add_item(create_mock({'updated':datetime(2009,11,14, 12,04)}), True)
-        #~ self.assertFalse(self.reporter.report_spam.called)
-        #~ self.reporter.add_item(create_mock({'updated':datetime(2009,11,14, 12,11)}), True)
-        #~ #   report
-        #~ self.assertTrue(self.reporter.report_spam.called)
-        #~ self.assertEqual(datetime(2009,11,14, 12,11),
-            #~ self.reporter.last_report)
-        #~ self.assertEqual(datetime(2009,11,14, 12,01),
-            #~ self.reporter.last_last_report)
-#~ #        self.assertEqual(None, self.reporter.last_last_report)
-#~
-        #~ self.reporter.add_item(create_mock({'updated':datetime(2009,11,14, 12,12)}), True)
-        #~ self.reporter.add_item(create_mock({'updated':datetime(2009,11,14, 12,12)}), True)
-        #~ self.reporter.add_item(create_mock({'updated':datetime(2009,11,14, 12,22)}), False)
-        #~ #   report
-        #~ self.assertEqual(datetime(2009,11,14, 12,22),
-            #~ self.reporter.last_report)
-        #~ self.assertEqual(datetime(2009,11,14, 12,11),
-            #~ self.reporter.last_last_report)
-#~
-        #~ self.reporter.add_item(create_mock({'updated':datetime(2009,11,14, 12,13)}), True)
-        #~ self.reporter.add_item(create_mock({'updated':datetime(2009,11,14, 12,13)}), True)
-        #~ self.reporter.add_item(create_mock({'updated':datetime(2009,11,14, 12,33)}), True)
-        #~ #   report
-        #~ self.assertEqual(datetime(2009,11,14, 12,33),
-            #~ self.reporter.last_report)
-        #~ self.assertEqual(datetime(2009,11,14, 12,22),
-            #~ self.reporter.last_last_report)
-#~
-    #~ def test_reality_from_step2(self):
-        #~ self.reporter = Reporter(Mock(), datetime(2009,11,14, 12,11),
-            #~ datetime(2009,11,14, 12,01), timedelta(minutes=5), Mock(), Mock())
-#~
-        #~ self.reporter.add_item(create_mock({'updated':datetime(2009,11,14, 12,12)}), True)
-        #~ self.reporter.add_item(create_mock({'updated':datetime(2009,11,14, 12,12)}), True)
-        #~ self.reporter.add_item(create_mock({'updated':datetime(2009,11,14, 12,22)}), False)
-        #~ #   report
-        #~ self.assertEqual(datetime(2009,11,14, 12,22),
-            #~ self.reporter.last_report)
-        #~ self.assertEqual(datetime(2009,11,14, 12,11),
-            #~ self.reporter.last_last_report)
-#~
-        #~ self.reporter.add_item(create_mock({'updated':datetime(2009,11,14, 12,13)}), True)
-        #~ self.reporter.add_item(create_mock({'updated':datetime(2009,11,14, 12,13)}), True)
-        #~ self.reporter.add_item(create_mock({'updated':datetime(2009,11,14, 12,33)}), True)
-        #~ #   report
-        #~ self.assertEqual(datetime(2009,11,14, 12,33),
-            #~ self.reporter.last_report)
-        #~ self.assertEqual(datetime(2009,11,14, 12,22),
-            #~ self.reporter.last_last_report)
+    def test_reality(self):
+        self.reporter = Reporter(Mock(), None, None, timedelta(minutes=5), Mock(), Mock())
+
+        self.reporter.add_item(create_mock({'updated':datetime(2009,11,14, 12,01)}), True)
+        self.reporter.add_item(create_mock({'updated':datetime(2009,11,14, 12,02)}), True)
+        self.reporter.add_item(create_mock({'updated':datetime(2009,11,14, 12,03)}), True)
+        self.reporter.add_item(create_mock({'updated':datetime(2009,11,14, 12,04)}), True)
+        self.assertFalse(self.reporter.report_spam.called)
+        self.reporter.add_item(create_mock({'updated':datetime(2009,11,14, 12,11)}), True)
+        #   report
+        self.assertTrue(self.reporter.report_spam.called)
+        self.assertEqual(datetime(2009,11,14, 12,11),
+            self.reporter.last_report)
+        self.assertEqual(datetime(2009,11,14, 12,01),
+            self.reporter.last_last_report)
+
+        self.reporter.add_item(create_mock({'updated':datetime(2009,11,14, 12,12)}), True)
+        self.reporter.add_item(create_mock({'updated':datetime(2009,11,14, 12,12)}), True)
+        self.reporter.add_item(create_mock({'updated':datetime(2009,11,14, 12,22)}), False)
+        #   report
+        self.assertEqual(datetime(2009,11,14, 12,22),
+            self.reporter.last_report)
+        self.assertEqual(datetime(2009,11,14, 12,11),
+            self.reporter.last_last_report)
+
+        self.reporter.add_item(create_mock({'updated':datetime(2009,11,14, 12,13)}), True)
+        self.reporter.add_item(create_mock({'updated':datetime(2009,11,14, 12,13)}), True)
+        self.reporter.add_item(create_mock({'updated':datetime(2009,11,14, 12,33)}), True)
+        #   report
+        self.assertEqual(datetime(2009,11,14, 12,33),
+            self.reporter.last_report)
+        self.assertEqual(datetime(2009,11,14, 12,22),
+            self.reporter.last_last_report)
+
+    def test_reality_from_step2(self):
+        self.reporter = Reporter(Mock(), datetime(2009,11,14, 12,11),
+            datetime(2009,11,14, 12,01), timedelta(minutes=5), Mock(), Mock())
+
+        self.reporter.add_item(create_mock({'updated':datetime(2009,11,14, 12,12)}), True)
+        self.reporter.add_item(create_mock({'updated':datetime(2009,11,14, 12,12)}), True)
+        self.reporter.add_item(create_mock({'updated':datetime(2009,11,14, 12,22)}), False)
+        #   report
+        self.assertEqual(datetime(2009,11,14, 12,22),
+            self.reporter.last_report)
+        self.assertEqual(datetime(2009,11,14, 12,11),
+            self.reporter.last_last_report)
+
+        self.reporter.add_item(create_mock({'updated':datetime(2009,11,14, 12,13)}), True)
+        self.reporter.add_item(create_mock({'updated':datetime(2009,11,14, 12,13)}), True)
+        self.reporter.add_item(create_mock({'updated':datetime(2009,11,14, 12,33)}), True)
+        #   report
+        self.assertEqual(datetime(2009,11,14, 12,33),
+            self.reporter.last_report)
+        self.assertEqual(datetime(2009,11,14, 12,22),
+            self.reporter.last_last_report)
 
 
 class TestReporterQueued(TestController):
