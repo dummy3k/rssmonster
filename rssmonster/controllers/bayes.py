@@ -290,6 +290,7 @@ class BayesController(BaseController):
 
         settings.report_offset = reporter.offset_id()
         log.debug("settings.report_offset: %s" % settings.report_offset)
+        log.debug("holding back: %s" % len(reporter.spam_entries))
         meta.Session.commit()
         return feed.writeString('utf-8')
 

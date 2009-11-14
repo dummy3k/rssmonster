@@ -51,11 +51,11 @@ class User(object):
         raise Exception('unknown type "%s"' % some_thing)
 
     def get_bayes_feed_setting(self, feed_id):
-        log.info("feed_id: %s" % feed_id)
-        log.info("self.bayes_feed_settings: %s" % self.bayes_feed_settings)
+        log.debug("feed_id: %s" % feed_id)
+        log.debug("self.bayes_feed_settings: %s" % self.bayes_feed_settings)
         for s in self.bayes_feed_settings:
             if int(s.feed_id) == int(feed_id):
-                log.info("self.bayes_feed_settings: %s" % self.bayes_feed_settings)
+                log.debug("self.bayes_feed_settings: %s" % self.bayes_feed_settings)
                 return s
 
         from bayes_feed_setting import BayesFeedSetting
