@@ -233,3 +233,19 @@ class TestReporterQueued(TestController):
         log.debug("offset_queue: %s" % self.reporter.offset_queue[0].id)
         self.assertEqual(9, self.reporter.offset_id())
 
+
+    def test_spam_only(self):
+        self.reporter.add_item(create_mock({'updated':datetime(2009,11,14, 12,11), 'id':10}), True)
+        self.reporter.add_item(create_mock({'updated':datetime(2009,11,14, 12,12), 'id':11}), True)
+        self.reporter.add_item(create_mock({'updated':datetime(2009,11,14, 12,22), 'id':20}), True)
+        self.reporter.add_item(create_mock({'updated':datetime(2009,11,14, 12,33), 'id':30}), True)
+        self.reporter.add_item(create_mock({'updated':datetime(2009,11,14, 12,44), 'id':40}), True)
+        self.reporter.add_item(create_mock({'updated':datetime(2009,11,14, 12,55), 'id':50}), True)
+        self.reporter.add_item(create_mock({'updated':datetime(2009,11,14, 13,06), 'id':60}), True)
+
+        self.assertEqual(10, self.reporter.entry_queue[0]['entries'][0].id)
+        self.assertEqual(11, self.reporter.entry_queue[0]['entries'][1].id)
+        self.assertEqual(20, self.reporter.entry_queue[1]['entries'][0].id)
+        self.assertEqual(30, self.reporter.entry_queue[2]['entries'][0].id)
+        self.assertEqual(40, self.reporter.entry_queue[3]['entries'][0].id)
+        self.assertEqual(50, self.reporter.entry_queue[4]['entries'][0].id)
