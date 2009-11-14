@@ -10,12 +10,13 @@ class HamEntry():
 
 class SpamEntry():
     def __init__(self):
-        self.type = 'ham'
+        self.type = 'spam'
         self.entries = []
         self.offset_id = None
 
     def add(self, entry):
         self.offset_id = entry.id
+        self.entries.append(entry)
 
 def last(array):
     return array[len(array)-1]
@@ -61,10 +62,14 @@ class Reporter():
 
 
     def offset_id(self):
-        if len(self.offset_queue.buffer) == 0:
-            return None
-        else:
-            return self.offset_queue.buffer[0].id
+        if len(self.spam_entries) > 0:
+            return self.spam_entries[0].id
+
+        retval = None
+        for e in self.offset_queue.buffer:
+            if not retval or retval > e.id:
+                retval = e.id
+        return retval
 
     def add_item(self, entry, is_spam):
 
@@ -78,32 +83,18 @@ class Reporter():
             self.report_spam()
             self.last_last_report = self.last_report
             self.last_report = entry.updated
-            self.offset_queue.push(last(self.spam_entries))
+            self.offset_queue.push(self.spam_entries[0])
 
-            if len(self.entry_queue) > 0:
-                last_entry = self.entry_queue[len(self.entry_queue)-1]
-
-                if last_entry.type != 'spam':
-                    last_entry = SpamEntry()
-                    self.entry_queue.push(last_entry)
-            else:
-                last_entry = SpamEntry()
-                self.entry_queue.push(last_entry)
-
-            last_entry.add(entry)
+            spe = SpamEntry()
+            spe.entries = self.spam_entries
+            self.entry_queue.push(spe)
+            self.spam_entries = []
 
         if not is_spam:
-            #~ self.feed.add_item(title="title", link="link",
-                #~ description="description", pubdate=entry.updated)
             self.add_ham()
 
             self.offset_queue.push(entry)
             self.entry_queue.push(HamEntry(entry))
-
-            #~ self.entry_queue.append(HamEntry(entry))
-            #~ if len(self.entry_queue) > self.max_entries:
-                #~ self.entry_queue = self.entry_queue[1:] #pop
-            #~ self.offset_id = self.entry_queue[0].offset_id
             return
 
         if entry.updated < self.last_report + self.delta:
