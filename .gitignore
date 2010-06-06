@@ -9,3 +9,4 @@
 *.env
 *.7z
 *.egg
+*egg-info/*
