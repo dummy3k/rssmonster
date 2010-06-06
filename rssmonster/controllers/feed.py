@@ -1,7 +1,8 @@
 import logging
 
 from pylons import request, response, session, tmpl_context as c
-from pylons.controllers.util import abort, redirect_to
+from pylons import url
+from pylons.controllers.util import abort, redirect
 from webhelpers.feedgenerator import Atom1Feed
 
 from rssmonster.lib.base import BaseController, render
@@ -25,7 +26,7 @@ class FeedController(BaseController):
         meta.Session.commit()
         
         #return "url = %s" % request.params.get('url')
-        return redirect_to(action='show_list')
+        return redirect(url(controller='feed', action='show_list'))
         
     def show_list(self):
         query = meta.Session.query(model.Feed)
@@ -34,7 +35,7 @@ class FeedController(BaseController):
         
     def show_feed(self, id, page=1):
         if not c.user:
-            return redirect_to(controller='login', action='signin', id=None, return_to=h.url_for())
+            return redirect(url(controller='login', action='signin', id=None, return_to=url.current()))
 
         c.feed = meta.find(model.Feed, id)
         guesser = bayes.Guesser(c.feed, c.user)

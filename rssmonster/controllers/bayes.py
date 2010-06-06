@@ -1,9 +1,10 @@
 import logging
-
 from datetime import datetime, timedelta, MINYEAR
 from hashlib import md5
+
 from pylons import request, response, session, config, tmpl_context as c
-from pylons.controllers.util import abort, redirect_to
+from pylons import url
+from pylons.controllers.util import abort, redirect
 
 from rssmonster.lib.base import BaseController, render
 import rssmonster.lib.helpers as h
@@ -68,7 +69,7 @@ class BayesController(BaseController):
         log.debug("FFF!")
 
         if not c.user:
-            return redirect_to(controller='login', action='signin', id=None, return_to=h.url_for())
+            return redirect(url(controller='login', action='signin', id=None, return_to=url.current()))
 
         entry = meta.find(model.FeedEntry, id)
         feed = meta.find(model.Feed, entry.feed_id)
@@ -77,7 +78,7 @@ class BayesController(BaseController):
 
     def mark_as_ham(self, id):
         if not c.user:
-            return redirect_to(controller='login', action='signin', id=None, return_to=h.url_for())
+            return redirect(url(controller='login', action='signin', id=None, return_to=url.current()))
 
         entry = meta.find(model.FeedEntry, id)
         feed = meta.find(model.Feed, entry.feed_id)
@@ -104,7 +105,6 @@ class BayesController(BaseController):
             if classy.pool == pool and not force:
                 h.flash("entry was already classified as %s" % pool)
                 return h.go_back(h.url_for(controller='feed', action='show_feed', id=entry.feed_id))
-                #return redirect_to(controller='feed', action='show_feed', id=entry.feed_id)
 
             classy.pool = pool
             meta.Session.update(classy)
@@ -132,7 +132,7 @@ class BayesController(BaseController):
 
     def show_score(self, id):
         if not c.user:
-            return redirect_to(controller='login', action='signin', id=None, return_to=h.url_for())
+            return redirect(url(controller='login', action='signin', id=None, return_to=url.current()))
 
         c.entry = meta.find(model.FeedEntry, id)
 
@@ -164,7 +164,7 @@ class BayesController(BaseController):
 
     def show_guesser(self, id):
         if not c.user:
-            return redirect_to(controller='login', action='signin', id=None, return_to=h.url_for())
+            return redirect(url(controller='login', action='signin', id=None, return_to=url.current()))
 
         c.feed = meta.find(model.Feed, id)
         guesser = Guesser(c.feed, c.user)
@@ -331,7 +331,7 @@ class BayesController(BaseController):
         #log.debug("settings.last_report: %s" % settings.last_report)
         #if not settings:
             #h.flash("no intervall set")
-            #h.redirect_to(controller='feed', action='show_feed', id=feed_data.id)
+            #h.redirect(controller='feed', action='show_feed', id=feed_data.id)
 
 
 
@@ -396,7 +396,7 @@ class BayesController(BaseController):
 
     def redo(self, id):
         if not c.user:
-            return redirect_to(controller='login', action='signin', id=None, return_to=h.url_for())
+            return redirect(url(controller='login', action='signin', id=None, return_to=url.current()))
 
         c.feed = meta.find(model.Feed, id)
 
@@ -435,7 +435,7 @@ class BayesController(BaseController):
 
     def mark_stopword(self, id, word):
         if not c.user:
-            return redirect_to(controller='login', action='signin', id=None, return_to=h.url_for())
+            return redirect(url(controller='login', action='signin', id=None, return_to=url.current()))
 
         w = model.Stopword()
         w.user_id = c.user.id
@@ -455,7 +455,7 @@ class BayesController(BaseController):
 
     def unmark_stopword(self, id, word):
         if not c.user:
-            return redirect_to(controller='login', action='signin', id=None, return_to=h.url_for())
+            return redirect(url(controller='login', action='signin', id=None, return_to=url.current()))
 
         w = meta.Session.query(model.Stopword).filter_by(user_id=c.user.id, feed_id=id, word=word).first()
         if not w:

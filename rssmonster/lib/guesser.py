@@ -38,6 +38,8 @@ class Guesser():
     
     def __init__(self, feed, user):
         import os.path
+        print "Hello World"
+        print config['base_url']
         
         self.user = user
         self.filename = config['bayes_dir']
