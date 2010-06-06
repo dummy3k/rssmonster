@@ -10,3 +10,4 @@
 *.7z
 *.egg
 *egg-info/*
+build/*
