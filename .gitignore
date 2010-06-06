@@ -7,3 +7,5 @@
 /data/*
 *.gz
 *.env
+*.7z
+*.egg
