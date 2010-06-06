@@ -19,7 +19,7 @@ setup(
         "reverend",
         "python-openid",
         "feedparser",
-        "Babel>=1.0",
+        "Babel",
     ],
     setup_requires=["PasteScript>=1.6.3"],
     packages=find_packages(exclude=['ez_setup']),
