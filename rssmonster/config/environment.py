@@ -3,6 +3,7 @@ import os
 
 from mako.lookup import TemplateLookup
 from pylons import config
+from pylons.configuration import PylonsConfig
 from pylons.error import handle_mako_error
 from sqlalchemy import engine_from_config
 
@@ -16,6 +17,7 @@ def load_environment(global_conf, app_conf):
     object
     """
     # Pylons paths
+    config = PylonsConfig()
     root = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
     paths = dict(root=root,
                  controllers=os.path.join(root, 'controllers'),
@@ -25,9 +27,12 @@ def load_environment(global_conf, app_conf):
     # Initialize config with the basic options
     config.init_app(global_conf, app_conf, package='rssmonster', paths=paths)
 
-    config['routes.map'] = make_map()
-    config['pylons.app_globals'] = app_globals.Globals()
+    config['routes.map'] = make_map(config)
+    config['pylons.app_globals'] = app_globals.Globals(config)
     config['pylons.h'] = rssmonster.lib.helpers
+
+    import pylons
+    pylons.cache._push_object(config['pylons.app_globals'].cache)
 
     # Create the Mako TemplateLookup, with the default auto-escaping
     config['pylons.app_globals'].mako_lookup = TemplateLookup(
@@ -43,3 +48,4 @@ def load_environment(global_conf, app_conf):
 
     # CONFIGURATION OPTIONS HERE (note: all config options will override
     # any Pylons config options)
+    return config
