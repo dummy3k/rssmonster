@@ -73,7 +73,7 @@ class Feed(object):
             log.warn("feed %s has no link" % self.id)
 
         self.last_fetch = datetime.now()
-        meta.Session.update(self)
+        meta.Session.add(self)
 
         retval = {'cnt_added':0, 'is_up2date':False}
 #        retval.is_up2date = False
@@ -117,7 +117,7 @@ class Feed(object):
                 meta.Session.save(feed_entry)
                 retval['cnt_added']+=1
             else:
-                meta.Session.update(feed_entry)
+                meta.Session.add(feed_entry)
 
 
         meta.Session.commit()

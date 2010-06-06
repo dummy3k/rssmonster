@@ -152,7 +152,7 @@ class LoginController(BaseController):
         
                 meta.Session.save(user)
             else:
-                meta.Session.update(user)
+                meta.Session.add(user)
             meta.Session.commit()
             #session.clear()
             session['openid'] = info.identity_url
@@ -217,7 +217,7 @@ class LoginController(BaseController):
         if newUser:
             meta.Session.add(user)
         else:
-            meta.Session.update(user)
+            meta.Session.add(user)
             
         meta.Session.commit()
         #session.clear()

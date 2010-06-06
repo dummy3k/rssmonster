@@ -107,7 +107,7 @@ class BayesController(BaseController):
                 return h.go_back(h.url_for(controller='feed', action='show_feed', id=entry.feed_id))
 
             classy.pool = pool
-            meta.Session.update(classy)
+            meta.Session.add(classy)
 
             untrain_id = entry.id
 
@@ -261,7 +261,7 @@ class BayesController(BaseController):
 
         guesser = Guesser(feed_data, c.rss_user, config)
         settings = c.rss_user.get_bayes_feed_setting(feed_data.id)
-        meta.Session.update(settings)
+        meta.Session.add(settings)
         delta = h.timedelta_from_string(settings.summarize_at)
         log.debug("delta %s" % delta)
 
@@ -476,7 +476,7 @@ class BayesController(BaseController):
                    .query(model.BayesFeedSetting)\
                    .filter_by(user_id = c.user.id, feed_id=id).first()
         if settings:
-            meta.Session.update(settings)
+            meta.Session.add(settings)
         else:
             settings = model.BayesFeedSetting()
             settings.user_id = c.user.id
