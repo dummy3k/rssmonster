@@ -6,11 +6,6 @@ import logging
 log = logging.getLogger(__name__)
 
 class TestGuesser(TestController):
-    def __init__(self, foo):
-        TestController.__init__(self, foo)
-        
-        log.debug("--- running %s" % foo)
-        
     def test(self):
         user = Mock()
         user.id = 666
@@ -18,7 +13,7 @@ class TestGuesser(TestController):
         feed = Mock()
         feed.id = 666
         
-        g = Guesser(feed, user)
+        g = Guesser(feed, user, self.config)
         self.assertEqual(10, 10)
 
     def test_tokenize(self):

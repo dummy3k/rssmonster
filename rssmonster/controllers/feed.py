@@ -15,7 +15,6 @@ import bayes
 log = logging.getLogger(__name__)
 
 class FeedController(BaseController):
-
     def add(self):
         if not request.params.get('url'):
             return render('feed/add.mako')

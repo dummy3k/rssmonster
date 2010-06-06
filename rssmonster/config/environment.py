@@ -30,6 +30,7 @@ def load_environment(global_conf, app_conf):
     config['routes.map'] = make_map(config)
     config['pylons.app_globals'] = app_globals.Globals(config)
     config['pylons.h'] = rssmonster.lib.helpers
+    config['pylons.strict_tmpl_context'] = False
 
     import pylons
     pylons.cache._push_object(config['pylons.app_globals'].cache)

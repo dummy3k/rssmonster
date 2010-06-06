@@ -1,5 +1,5 @@
 import re
-from pylons import config
+#~ from pylons import config
 from reverend.thomas import Bayes
 from rssmonster.model import meta
 import helpers as h
@@ -36,11 +36,9 @@ def my_tokenize(msg, stopwords):
     
 class Guesser():
     
-    def __init__(self, feed, user):
+    def __init__(self, feed, user, config):
         import os.path
-        print "Hello World"
-        print config['base_url']
-        
+
         self.user = user
         self.filename = config['bayes_dir']
         self.filename += "/users/%s" % user.id
