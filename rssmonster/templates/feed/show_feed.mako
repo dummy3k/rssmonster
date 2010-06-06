@@ -18,7 +18,7 @@
 <p>
 	Report spam every:
 	<input type='text' name='word' value='${c.user.get_bayes_feed_setting(c.feed.id).summarize_at}'/>
-	<input type='hidden' name='return_to' value='${h.url_for()}'/>
+	<input type='hidden' name='return_to' value='${url.current()}'/>
 	<input type='submit' value='change'/>
 </p>
 </form>
@@ -62,7 +62,7 @@ ${entry_mako.entry(e)}
         <td>${entry.score['spam'] and "%.4f" % entry.score['spam']}</td>
         <td>${entry.score['ham'] and "%.4f" % entry.score['ham']}</td>
         <td>
-            % for x in entry.actions(h.url_for() + '#' + str(entry.id), c.user):
+            % for x in entry.actions(url.current() + '#' + str(entry.id), c.user):
             <a href="${x['link']}">${x['title']}</a>&nbsp;
             % endfor
         </td>

@@ -38,7 +38,7 @@ class FeedEntry(object):
         import rssmonster.lib.helpers as h
 
         ret = [
-                {'link':h.url_for(controller='/bayes', action='show_score', id=self.id),
+                {'link':h.url_for(controller='bayes', action='show_score', id=self.id),
                  'title':'Score'}
                 ]
 
@@ -48,12 +48,12 @@ class FeedEntry(object):
                 .filter_by(user_id = user.id, entry_id=self.id).first()
 
         if not classy:
-            ret.append({'title':'Spam', 'link':h.url_for(controller='/bayes', action='mark_as_spam', id=self.id, return_to=return_to)})
-            ret.append({'title':'Ham', 'link':h.url_for(controller='/bayes', action='mark_as_ham', id=self.id, return_to=return_to)})
+            ret.append({'title':'Spam', 'link':h.url_for(controller='bayes', action='mark_as_spam', id=self.id, return_to=return_to)})
+            ret.append({'title':'Ham', 'link':h.url_for(controller='bayes', action='mark_as_ham', id=self.id, return_to=return_to)})
         elif classy.pool == 'spam':
-            ret.append({'title':'Ham', 'link':h.url_for(controller='/bayes', action='mark_as_ham', id=self.id, return_to=return_to)})
+            ret.append({'title':'Ham', 'link':h.url_for(controller='bayes', action='mark_as_ham', id=self.id, return_to=return_to)})
         elif classy.pool == 'ham':
-            ret.append({'title':'Spam', 'link':h.url_for(controller='/bayes', action='mark_as_spam', id=self.id, return_to=return_to)})
+            ret.append({'title':'Spam', 'link':h.url_for(controller='bayes', action='mark_as_spam', id=self.id, return_to=return_to)})
         else:
             raise "bad pool"
 
@@ -68,12 +68,12 @@ class FeedEntry(object):
                 .filter_by(user_id = user.id, entry_id=self.id).first()
 
         if not classy:
-            ret.append({'title':'Spam', 'link':h.url_for(controller='/bayes', action='mark_as_spam', id=self.id, return_to=return_to)})
-            ret.append({'title':'Ham', 'link':h.url_for(controller='/bayes', action='mark_as_ham', id=self.id, return_to=return_to)})
+            ret.append({'title':'Spam', 'link':h.url_for(controller='bayes', action='mark_as_spam', id=self.id, return_to=return_to)})
+            ret.append({'title':'Ham', 'link':h.url_for(controller='bayes', action='mark_as_ham', id=self.id, return_to=return_to)})
         elif classy.pool == 'spam':
-            ret.append({'title':'Ham', 'link':h.url_for(controller='/bayes', action='mark_as_ham', id=self.id, return_to=return_to)})
+            ret.append({'title':'Ham', 'link':h.url_for(controller='bayes', action='mark_as_ham', id=self.id, return_to=return_to)})
         elif classy.pool == 'ham':
-            ret.append({'title':'Spam', 'link':h.url_for(controller='/bayes', action='mark_as_spam', id=self.id, return_to=return_to)})
+            ret.append({'title':'Spam', 'link':h.url_for(controller='bayes', action='mark_as_spam', id=self.id, return_to=return_to)})
         else:
             raise "bad pool"
 

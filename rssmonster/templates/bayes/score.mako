@@ -20,7 +20,7 @@ Feed:
 ${feed_actions.render(c.feed)}
 
 Entry:
-% for x in c.entry.actions(h.url_for(), c.user):
+% for x in c.entry.actions(url.current(), c.user):
 <a href="${x['link']}">${x['title']}</a>&nbsp;
 % endfor
 
@@ -34,7 +34,7 @@ ${h.strip_ml_tags(c.entry.summary)}
 %   endif
 ${word | h} 
 %   if word in map(lambda x: x[0], c.pool_data_spam) or word in map(lambda x: x[0], c.pool_data_ham):
-<a href="${h.url_for(controller='bayes', action='mark_stopword', id=c.feed.id, word=word, return_to=h.url_for())}"/>x</a></b>
+<a href="${h.url_for(controller='bayes', action='mark_stopword', id=c.feed.id, word=word, return_to=url.current())}"/>x</a></b>
 %   endif
 ,
 % endfor
@@ -48,7 +48,7 @@ ${word | h}
 %   endif
 ${word} (${cnt}), 
 %   if word in c.tokens:
-<a href="${h.url_for(controller='bayes', action='mark_stopword', id=c.feed.id, word=word, return_to=h.url_for())}"/>x</a></b>
+<a href="${h.url_for(controller='bayes', action='mark_stopword', id=c.feed.id, word=word, return_to=url.current())}"/>x</a></b>
 </b>
 %   endif
 % endfor
@@ -62,7 +62,7 @@ ${word} (${cnt}),
 %   endif
 ${word} (${cnt}), 
 %   if word in c.tokens:
-<a href="${h.url_for(controller='bayes', action='mark_stopword', id=c.feed.id, word=word, return_to=h.url_for())}"/>x</a></b>
+<a href="${h.url_for(controller='bayes', action='mark_stopword', id=c.feed.id, word=word, return_to=url.current())}"/>x</a></b>
 </b>
 %   endif
 % endfor

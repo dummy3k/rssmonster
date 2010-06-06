@@ -6,7 +6,7 @@
             ${e.title}</a>
     </div>
     <div style='float:right;text-align:right;'>
-    % for x in e.actions(h.url_for(), c.user):
+    % for x in e.actions(url.current(), c.user):
         <a href="${x['link']}">${x['title']}</a>&nbsp;
     % endfor
     </div>

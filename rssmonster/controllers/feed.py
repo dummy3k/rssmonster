@@ -1,7 +1,7 @@
 import logging
 
 from pylons import request, response, session, tmpl_context as c
-from pylons import url
+from pylons import url, config
 from pylons.controllers.util import abort, redirect
 from webhelpers.feedgenerator import Atom1Feed
 
@@ -37,7 +37,7 @@ class FeedController(BaseController):
             return redirect(url(controller='login', action='signin', id=None, return_to=url.current()))
 
         c.feed = meta.find(model.Feed, id)
-        guesser = bayes.Guesser(c.feed, c.user)
+        guesser = bayes.Guesser(c.feed, c.user, config)
         query = c.feed.get_entries().order_by(model.FeedEntry.updated.desc()) #.limit(30)
 
         from webhelpers import paginate
@@ -78,7 +78,7 @@ class FeedController(BaseController):
 
         c.rss_feeds = [
             {'title':'Unmodified',
-             'link':h.url_for(action='pipe')
+             'link':h.url_for(controller='feed', action='pipe')
             },
             {'title':'Mixed',
              'link':h.url_for(controller='bayes', action='mixed_rss', user_id=c.user.id)

@@ -100,7 +100,9 @@ class LoginController(BaseController):
 
         authrequest.addExtension(sreg_request)
         redirecturl = authrequest.redirectURL(config['base_url'],
-            return_to=config['base_url'] + h.url_for(action='verified', qualified=False, 
+            return_to=config['base_url'] + h.url_for(controller='login',
+                                                     action='verified',
+                                                     qualified=False, 
                                                      return_to=request.params.get('return_to', None)),
             immediate=False
         )
@@ -119,7 +121,7 @@ class LoginController(BaseController):
         problem_msg = _('A problem ocurred comunicating to your OpenID server. Please try again.')
         self.consumer = Consumer(self.openid_session, self.store)
         info = self.consumer.complete(request.params,
-                                      (h.url_for(action='verified',
+                                      (h.url_for(controller='login', action='verified',
                                                  qualified=True)))
         if info.status == SUCCESS:
             query = meta.Session.query(model.User)

@@ -73,7 +73,7 @@ class BayesController(BaseController):
 
         entry = meta.find(model.FeedEntry, id)
         feed = meta.find(model.Feed, entry.feed_id)
-        guesser = Guesser(feed, c.user)
+        guesser = Guesser(feed, c.user, config)
         return self.__mark_as__(entry, 'spam', guesser)
 
     def mark_as_ham(self, id):
@@ -82,7 +82,7 @@ class BayesController(BaseController):
 
         entry = meta.find(model.FeedEntry, id)
         feed = meta.find(model.Feed, entry.feed_id)
-        guesser = Guesser(feed, c.user)
+        guesser = Guesser(feed, c.user, config)
         return self.__mark_as__(entry, 'ham', guesser)
 
     def __mark_as__(self, entry, pool, guesser, force=False):
@@ -138,7 +138,7 @@ class BayesController(BaseController):
 
         feed = meta.find(model.Feed, c.entry.feed_id)
         c.feed = feed
-        guesser = Guesser(feed, c.user)
+        guesser = Guesser(feed, c.user, config)
         guess = guesser.guess(c.entry)
 
         log.debug("guess: %s" % guess)
@@ -167,7 +167,7 @@ class BayesController(BaseController):
             return redirect(url(controller='login', action='signin', id=None, return_to=url.current()))
 
         c.feed = meta.find(model.Feed, id)
-        guesser = Guesser(c.feed, c.user)
+        guesser = Guesser(c.feed, c.user, config)
 
         import operator
         c.pool_data_spam = guesser.trainer.poolData('spam')
@@ -217,7 +217,7 @@ class BayesController(BaseController):
         c.base_url = config['base_url']
         log.debug('c.base_url: %s' % c.base_url)
 
-        guesser = Guesser(feed_data, c.rss_user)
+        guesser = Guesser(feed_data, c.rss_user, config)
         entries = feed_data.get_entries().order_by(model.FeedEntry.updated.desc()).limit(30)
 
         for entry in entries:
@@ -259,7 +259,7 @@ class BayesController(BaseController):
         c.base_url = config['base_url']
         log.debug('c.base_url: %s' % c.base_url)
 
-        guesser = Guesser(feed_data, c.rss_user)
+        guesser = Guesser(feed_data, c.rss_user, config)
         settings = c.rss_user.get_bayes_feed_setting(feed_data.id)
         meta.Session.update(settings)
         delta = h.timedelta_from_string(settings.summarize_at)
@@ -405,7 +405,7 @@ class BayesController(BaseController):
                 .join(model.FeedEntry)\
                 .filter_by(feed_id=id)
 
-        guesser = Guesser(c.feed, c.user)
+        guesser = Guesser(c.feed, c.user, config)
         guesser.clear()
 
         cnt = 0
