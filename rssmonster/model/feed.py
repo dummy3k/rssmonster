@@ -114,7 +114,7 @@ class Feed(object):
             feed_entry.link = entry['link']
 
             if is_new:
-                meta.Session.save(feed_entry)
+                meta.Session.add(feed_entry)
                 retval['cnt_added']+=1
             else:
                 meta.Session.add(feed_entry)
