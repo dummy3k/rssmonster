@@ -98,7 +98,7 @@ class BayesController(BaseController):
             classy.user_id = c.user.id
             classy.entry_id = entry.id
             classy.pool = pool
-            meta.Session.save(classy)
+            meta.Session.add(classy)
 
             untrain_id = None
         else:
@@ -441,7 +441,7 @@ class BayesController(BaseController):
         w.user_id = c.user.id
         w.feed_id = id
         w.word = word
-        meta.Session.save(w)
+        meta.Session.add(w)
 
         from sqlalchemy.exceptions import IntegrityError
         try:
