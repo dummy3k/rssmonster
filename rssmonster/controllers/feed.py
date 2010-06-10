@@ -21,7 +21,7 @@ class FeedController(BaseController):
             
         feed = model.Feed()
         feed.url = request.params.get('url')
-        meta.Session.save(feed)
+        meta.Session.add(feed)
         meta.Session.commit()
         
         #return "url = %s" % request.params.get('url')
@@ -100,6 +100,7 @@ class FeedController(BaseController):
         return render('feed/show_feed.mako')
 
     def update(self, id):
+        #~ feed = meta.Session.query(model.Feed).get(id)
         feed = meta.find(model.Feed, id)
         cnt_added = feed.fetch()
         h.flash("added %s entries" % cnt_added)
